@@ -65,8 +65,12 @@ jobs:
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
-      - name: Show haxelib path
-        run: haxelib path haxelib
+      - name: Show haxe info
+        run: |
+          echo "Haxe version:"
+          haxe -version
+          echo "Haxe lib path:"
+          haxelib config
 
       - name: Install haxelib dependencies
         run: |
