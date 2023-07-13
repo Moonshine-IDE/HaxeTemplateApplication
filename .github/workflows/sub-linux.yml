@@ -73,19 +73,40 @@ jobs:
           haxelib config
 
       - name: Install haxelib dependencies
-        run: |
-          # haxelib install hxp --quiet
-          haxelib install hxcpp --quiet
-          # haxelib install format --quiet
-          # git clone --recursive --depth 1 --branch 8.1.0-Dev https://github.com/openfl/lime
-          # haxelib dev lime lime
-          # haxelib run lime rebuild windows -release -clean
+        run: |          
+          # Install hxcpp
+          haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp.git --always  --quiet
+          pushd .
+          cd /opt/hostedtoolcache/haxe/4.2.5/x64/lib/hxcpp/git/tools/hxcpp
+          haxe compile.hxml
+          popd
           
-          haxelib install lime
+          # Install lime
+          git clone --recursive --depth 1 --branch 8.1.0-Dev https://github.com/openfl/lime
+          haxelib dev lime lime
           
-          haxelib install openfl --quiet
-          haxelib install actuate --quiet
-          haxelib install feathersui --quiet
+          # Install lime dependencies
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib git lime-samples https://github.com/openfl/lime-samples --quiet
+          
+          # Rebuild lime
+          haxelib run lime rebuild linux -release -clean
+          
+          # Install and setup openfl
+          haxelib git openfl https://github.com/openfl/openfl.git 9.3.0-Dev --quiet
+          haxelib run openfl setup --quiet
+          
+          # Install other dependencies
+          haxelib install crypto --quiet
+          haxelib install amfio --quiet
+          haxelib git feathersui https://github.com/feathersui/feathersui-openfl.git --quiet
+          haxelib git feathersui-cairngorm https://github.com/feathersui/feathersui-cairngorm.git --quiet
+          haxelib git feathersui-rpc-services https://github.com/feathersui/feathersui-rpc-services.git --quiet
+          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
+          haxelib install feathersui-validators --quiet
+          haxelib install await --quiet
+          haxelib install tink_core --quiet
 
       - name: Build
         run: haxelib run openfl build project.xml linux ${{ steps.haxe-env-flag.outputs.value }} -clean
