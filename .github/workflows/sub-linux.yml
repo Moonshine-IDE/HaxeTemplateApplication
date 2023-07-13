@@ -1,0 +1,90 @@
+name: SUB - Build Linux
+
+on:    
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+
+  workflow_call:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: string
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:    
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      
+      - name: Checkout LFS objects
+        run: git lfs checkout
+
+      - name: Map Env to full-app-name
+        uses: spilchen/switch-case-action@v2
+        id: full-app-name
+        with:
+          conditionals-with-values: |
+            ${{ inputs.env == 'production' }} => HaxeTemplateApplication
+            ${{ inputs.env == 'development' }} => HaxeTemplateApplicationDevelopment
+          default: HaxeTemplateApplication
+
+      - name: Map Env to haxe env flag
+        uses: spilchen/switch-case-action@v2
+        id: haxe-env-flag
+        with:
+          conditionals-with-values: |
+            ${{ inputs.env == 'production' }} => -final
+            ${{ inputs.env == 'development' }} => -debug
+          default: -final
+
+      - name: Set up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Update haxelib
+        run: haxelib --global update haxelib --quiet
+
+      - name: Install haxelib dependencies
+        run: |
+          # haxelib install hxp --quiet
+          haxelib install hxcpp --quiet
+          # haxelib install format --quiet
+          # git clone --recursive --depth 1 --branch 8.1.0-Dev https://github.com/openfl/lime
+          # haxelib dev lime lime
+          # haxelib run lime rebuild windows -release -clean
+          
+          haxelib install lime
+          
+          haxelib install openfl --quiet
+          haxelib install actuate --quiet
+          haxelib install feathersui --quiet
+
+      - name: Build
+        run: haxelib run openfl build project.xml linux ${{ steps.haxe-env-flag.outputs.value }} -clean
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-${{ inputs.env }}-bin
+          path: bin/linux/bin/
