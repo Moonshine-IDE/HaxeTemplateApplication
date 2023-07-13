@@ -72,6 +72,10 @@ jobs:
           echo "Haxe lib path:"
           haxelib config
 
+      - name: Install missing system dependencies
+        run: |
+          sudo apt-get install libxinerama-dev
+
       - name: Install haxelib dependencies
         run: |          
           # Install hxcpp
