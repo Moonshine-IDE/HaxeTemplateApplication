@@ -65,6 +65,9 @@ jobs:
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
+      - name: Show haxelib path
+        run: haxelib path haxelib
+
       - name: Install haxelib dependencies
         run: |
           # haxelib install hxp --quiet
