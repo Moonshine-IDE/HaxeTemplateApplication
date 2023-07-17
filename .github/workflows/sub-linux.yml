@@ -112,5 +112,5 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: linux-${{ inputs.env }}-bin
-          path: bin/linux/bin/
+          name: HaxeTemplateApplication-Setup.AppImage
+          path: build/HaxeTemplateApplication-x86_64.AppImage
