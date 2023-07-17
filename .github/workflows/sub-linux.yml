@@ -90,7 +90,7 @@ jobs:
           mkdir build/linux/HaxeTemplateApplication.AppDir/usr/bin
           mkdir build/linux/HaxeTemplateApplication.AppDir/usr/lib
           tree bin/linux/bin
-          cp bin/linux/bin/HaxeTemplateApplicationDevelopment build/linux/HaxeTemplateApplication.AppDir/usr/bin/
+          cp bin/linux/bin/HaxeTemplateApplication build/linux/HaxeTemplateApplication.AppDir/usr/bin/
           cp bin/linux/bin/lime.ndll build/linux/HaxeTemplateApplication.AppDir/usr/lib/lime.ndll
           cp assets/feathersui.svg build/linux/HaxeTemplateApplication.AppDir/icon.svg
           tree build
