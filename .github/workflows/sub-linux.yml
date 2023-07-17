@@ -42,6 +42,17 @@ jobs:
 
       # Mapping values
 
+      - name: Test global var 1
+        run: |
+          if [ ${{ inputs.env}} == 'production' ]; then
+            echo "SOME=HaxeTemplateApplication" >> $GITHUB_ENV
+          else
+            echo "SOME=HaxeTemplateApplicationDevelopment" >> $GITHUB_ENV
+          fi
+
+      - name: Test global var 2
+        run: echo ${{ env.SOME }}
+
       - name: Map Env to full-app-name
         uses: spilchen/switch-case-action@v2
         id: full-app-name
