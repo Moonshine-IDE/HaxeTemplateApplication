@@ -166,6 +166,12 @@ jobs:
           chmod +x build/linux/${{ env.APP_NAME }}.AppDir/AppRun
           chmod +x build/linux/${{ env.APP_NAME }}.AppDir/usr/bin/${{ env.APP_NAME }}
 
+      - name: Debug AppImage
+        run: |
+          cat project.xml
+          cat build/linux/${{ steps.full-app-name.outputs.value }}.AppDir/${{ steps.full-app-name.outputs.value }}.desktop
+          cat build/linux/${{ steps.full-app-name.outputs.value }}.AppDir/AppRun
+
       - name: Make AppImage
         run: |
           wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
