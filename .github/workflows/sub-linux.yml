@@ -71,6 +71,7 @@ jobs:
           haxe -version
           echo "Haxe lib path:"
           haxelib config
+          tree
 
       - name: Install haxelib dependencies
         run: |          
