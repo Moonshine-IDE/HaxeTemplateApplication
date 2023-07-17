@@ -48,6 +48,9 @@ jobs:
             ${{ inputs.env == 'development' }} => HaxeTemplateApplicationDevelopment
           default: HaxeTemplateApplication
 
+      - name: Test output
+        run: echo ${{ steps.full-app-name }}
+
       - name: Map Env to haxe env flag
         uses: spilchen/switch-case-action@v2
         id: haxe-env-flag
