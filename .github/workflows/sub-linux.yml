@@ -150,7 +150,10 @@ jobs:
           cp bin/linux/bin/lime.ndll build/linux/${{ env.APP_NAME }}.AppDir/usr/lib/lime.ndll
           cp assets/feathersui.svg build/linux/${{ env.APP_NAME }}.AppDir/icon.svg
           cp build/linux/AppRun build/linux/${{ env.APP_NAME }}.AppDir/
-          cp build/linux/.desktop build/linux/${{ env.APP_NAME }}.AppDir/        
+          cp build/linux/.desktop build/linux/${{ env.APP_NAME }}.AppDir/     
+          
+          chmod +x build/linux/${{ env.APP_NAME }}.AppDir/AppRun
+          chmod +x build/linux/${{ env.APP_NAME }}.AppDir/usr/bin/${{ env.APP_NAME }}
 
       - name: Make AppImage
         run: |
