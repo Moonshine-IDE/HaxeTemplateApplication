@@ -2,9 +2,9 @@
 <project>
 	<!-- project.xml reference: https://lime.software/docs/project-files/xml-format/ -->
 	
-	<meta title="HaxeTemplateApplication" package="com.example.HaxeTemplateApplication" version="1.0.0" company="Company Name" />
+	<meta title="APP_NAME APP_VERSION" package="APP_ID" version="VERSION" company="STARTcloud" />
 	
-	<app main="HaxeTemplateApplication" path="bin" file="HaxeTemplateApplication" />
+	<app main="HaxeTemplateApplication" path="bin" file="APP_NAME" />
 
 	<window allow-high-dpi="true" />
 	<window fps="60"/>
