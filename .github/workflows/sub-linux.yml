@@ -57,6 +57,11 @@ jobs:
             ${{ inputs.env == 'development' }} => -debug
           default: -final
 
+      - name: Install missing system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libfuse2
+
       - name: Set up Haxe
         uses: krdlab/setup-haxe@v1
         with:
