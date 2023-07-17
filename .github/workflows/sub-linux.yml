@@ -83,6 +83,18 @@ jobs:
       - name: Build
         run: haxelib run openfl build project.xml linux ${{ steps.haxe-env-flag.outputs.value }} -clean
 
+      - name: Make AppDir
+        run: |
+          cp bin/linux/bin/HaxeTemplateApplication build/linux/HaxeTemplateApplication.AppDir/usr/bin/
+          cp bin/linux/bin/lime.ndll build/linux/HaxeTemplateApplication.AppDir/usr/lib/lime.ndll
+          cp assets/feathersui.svg build/linux/HaxeTemplateApplication.AppDir/icon.svg
+          ls -Ra build/linux/HaxeTemplateApplication.AppDir
+
+      - name: Make AppImage
+        run: |
+          ARCH=x86_64 appimagetool build/linux/HaxeTemplateApplication.AppDir
+          ls
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
