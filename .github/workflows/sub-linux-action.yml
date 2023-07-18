@@ -145,7 +145,7 @@ jobs:
         with:
           app-name: $APP_NAME
           bin-paths: 'bin/linux/bin/$APP_NAME'
-          lib-paths: 'bin/linux/bin/lime.dll'
+          lib-paths: 'bin/linux/bin/lime.ndll'
           resource-paths: 'assets/feathersui.svg'
           
 
