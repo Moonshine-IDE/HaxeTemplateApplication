@@ -144,9 +144,9 @@ jobs:
         uses: ./.github/actions/create-appimage
         with:
           app-name: $APP_NAME
-          app-image-usr-bin: 'bin/linux/bin/$APP_NAME'
-          app-image-usr-lib: 'bin/linux/bin/lime.dll'
-          app-image: 'assets/feathersui.svg'
+          bin-paths: 'bin/linux/bin/$APP_NAME'
+          lib-paths: 'bin/linux/bin/lime.dll'
+          resource-paths: 'assets/feathersui.svg'
           
 
 
