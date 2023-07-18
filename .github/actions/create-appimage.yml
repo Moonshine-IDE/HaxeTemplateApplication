@@ -1,0 +1,49 @@
+name: 'Create AppImage'
+description: 'Creates an AppImage from binaries and resources'
+inputs:
+  app-name:
+    description: 'Name of the application'
+    required: true
+  app-image-usr-bin:
+    description: 'Comma-separated paths to the binaries'
+    required: true
+  app-image:
+    description: 'Comma-separated paths to the resources directories'
+    required: true
+  app-image-usr-lib:
+    description: 'Comma-separated paths to the directories with shared libraries'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Install dependencies
+      run: sudo apt-get install -y libfuse2
+
+    - name: Download AppImageTool
+      run: |
+        wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+        chmod a+x appimagetool-x86_64.AppImage
+
+    - name: Create AppDir structure
+      run: |
+        mkdir -p AppDir/usr/bin
+
+        IFS=',' read -ra ADDR <<< "${{ inputs.app-image-usr-bin }}"
+        for binary in "${ADDR[@]}"; do 
+          cp $binary AppDir/usr/bin; 
+        done
+
+        IFS=',' read -ra ADDR <<< "${{ inputs.app-image }}"
+        for resource in "${ADDR[@]}"; do 
+          cp -r $resource/* AppDir/; 
+        done
+
+        IFS=',' read -ra ADDR <<< "${{ inputs.app-image-usr-lib }}"
+        for lib in "${ADDR[@]}"; 
+          do cp -r $lib/* AppDir/usr/bin; 
+        done
+
+    - name: Debug output
+      run: tree AppDir
