@@ -1,5 +1,5 @@
 #!/bin/bash
 
 HERE="$(dirname "$(readlink -f "${0}")")"
-EXEC="$(HERE)/usr/bin/APP_NAME"
+EXEC="${HERE}/usr/bin/APP_NAME"
 exec "${EXEC}"
