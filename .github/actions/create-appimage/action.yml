@@ -4,6 +4,15 @@ inputs:
   app-name:
     description: 'Name of the application'
     required: true
+  app-version:
+    description: 'Version of the application'
+    required: true
+  app-icon:
+    description: 'Path to the application icon'
+    required: true
+  app-categories:
+    description: 'Comma-separated list of categories'
+    required: true
   bin-paths:
     description: 'Comma-separated paths to the binaries'
     required: true
@@ -50,6 +59,33 @@ runs:
         done
       shell: bash
 
+    - name: Create Desktop file
+      shell: bash
+      run: |
+      echo "[Desktop Entry]
+        Name=${{ inputs.app-name }}
+        Exec=${{ inputs.app-name }}
+        Icon=${{ inputs.app-icon }}
+        Type=Application
+        Categories=${{ inputs.app-categories }}
+        X-AppImage-Name=${{ inputs.app-name }}
+        X-AppImage-Version=${{ inputs.app-version }}
+        X-AppImage-Arch=x86-64;" > AppDir/${{ inputs.app-name }}.desktop
+
+    - name: Create AppRun
+      shell: bash
+      run: |
+        echo "#!/bin/bash
+        HERE=\$(dirname \"\$(readlink -f \"\${0}\")\")
+        \$HERE/usr/bin/${{ inputs.app-name }}" > AppDir/AppRun
+      shell: bash      
+
     - name: Debug output
-      run: tree AppDir
+      run: |
+        tree AppDir
+        echo Desktop:
+        cat AppDir/${{ inputs.app-name }}.desktop
+        echo
+        echo AppRun:
+        cat AppDir/AppRun
       shell: bash
