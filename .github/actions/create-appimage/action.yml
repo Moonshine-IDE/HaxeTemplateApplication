@@ -40,7 +40,7 @@ runs:
 
         IFS=',' read -ra ADDR <<< "${{ inputs.bin-paths }}"
         for binary in "${ADDR[@]}"; do 
-          cp $binary buld/AppDir/usr/bin; 
+          cp $binary build/AppDir/usr/bin; 
         done
 
         IFS=',' read -ra ADDR <<< "${{ inputs.lib-paths }}"
