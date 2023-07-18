@@ -89,7 +89,7 @@ runs:
 
     - name: Debug output
       run: |
-        tree
+        tree build
         echo Desktop:
         cat build/AppDir/${{ inputs.app-name }}.desktop
         echo
