@@ -4,15 +4,16 @@ inputs:
   app-name:
     description: 'Name of the application'
     required: true
-  app-image-usr-bin:
+  bin-paths:
     description: 'Comma-separated paths to the binaries'
     required: true
-  app-image:
-    description: 'Comma-separated paths to the resources directories'
+  lib-paths:
+    description: 'Comma-separated paths to the libraries'
     required: true
-  app-image-usr-lib:
-    description: 'Comma-separated paths to the directories with shared libraries'
+  resource-paths:
+    description: 'Comma-separated paths to other resources that go into the AppDir'
     required: true
+  
 
 runs:
   using: 'composite'
@@ -31,20 +32,21 @@ runs:
     - name: Create AppDir structure
       run: |
         mkdir -p AppDir/usr/bin
+        mkdir -p AppDir/usr/lib
 
-        IFS=',' read -ra ADDR <<< "${{ inputs.app-image-usr-bin }}"
+        IFS=',' read -ra ADDR <<< "${{ inputs.bin-paths }}"
         for binary in "${ADDR[@]}"; do 
           cp $binary AppDir/usr/bin; 
         done
 
-        IFS=',' read -ra ADDR <<< "${{ inputs.app-image }}"
-        for resource in "${ADDR[@]}"; do 
-          cp -r $resource/* AppDir/; 
+        IFS=',' read -ra ADDR <<< "${{ inputs.lib-paths }}"
+        for lib in "${ADDR[@]}"; 
+          do cp -r $lib AppDir/usr/lib; 
         done
 
-        IFS=',' read -ra ADDR <<< "${{ inputs.app-image-usr-lib }}"
-        for lib in "${ADDR[@]}"; 
-          do cp -r $lib/* AppDir/usr/bin; 
+        IFS=',' read -ra ADDR <<< "${{ inputs.resource-paths }}"
+        for resource in "${ADDR[@]}"; do 
+          cp -r $resource AppDir/; 
         done
       shell: bash
 
