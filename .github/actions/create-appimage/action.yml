@@ -29,16 +29,17 @@ runs:
   steps:
 
     - name: Install dependencies
-      run: sudo apt-get install -y libfuse2
       shell: bash
+      run: sudo apt-get install -y libfuse2
 
     - name: Download AppImageTool
+      shell: bash
       run: |
         wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
         chmod a+x appimagetool-x86_64.AppImage
-      shell: bash
 
     - name: Create AppDir structure
+      shell: bash
       run: |
         mkdir -p AppDir/usr/bin
         mkdir -p AppDir/usr/lib
@@ -57,7 +58,6 @@ runs:
         for resource in "${ADDR[@]}"; do 
           cp -r $resource AppDir/; 
         done
-      shell: bash
 
     - name: Create Desktop file
       shell: bash
@@ -74,33 +74,21 @@ runs:
         X-AppImage-Arch=x86-64;" > AppDir/${{ inputs.app-name }}.desktop
         EOF
 
-    # - name: Create Desktop file
-    #   shell: bash
-    #   run: |
-    #   echo "[Desktop Entry]
-    #     Name=${{ inputs.app-name }}
-    #     Exec=${{ inputs.app-name }}
-    #     Icon=${{ inputs.app-icon-name }}
-    #     Type=Application
-    #     Categories=${{ inputs.app-categories }}
-    #     X-AppImage-Name=${{ inputs.app-name }}
-    #     X-AppImage-Version=${{ inputs.app-version }}
-    #     X-AppImage-Arch=x86-64;" > AppDir/${{ inputs.app-name }}.desktop
-
-    # - name: Create AppRun
-    #   shell: bash
-    #   run: |
-    #     echo "#!/bin/bash
-    #     HERE=\$(dirname \"\$(readlink -f \"\${0}\")\")
-    #     \$HERE/usr/bin/${{ inputs.app-name }}" > AppDir/AppRun
-    #   shell: bash      
+    - name: Create AppRun file
+      shell: bash
+      run: |
+        cat << EOF > AppDir/AppRun
+        echo "#!/bin/bash
+        HERE=\$(dirname \"\$(readlink -f \"\${0}\")\")
+        \$HERE/usr/bin/${{ inputs.app-name }}" > AppDir/AppRun
+        EOF    
 
     - name: Debug output
       run: |
         tree AppDir
         echo Desktop:
         cat AppDir/${{ inputs.app-name }}.desktop
-        # echo
-        # echo AppRun:
-        # cat AppDir/AppRun
+        echo
+        echo AppRun:
+        cat AppDir/AppRun
       shell: bash
