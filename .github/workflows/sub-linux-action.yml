@@ -151,14 +151,14 @@ jobs:
           app-icon-name: 'feathersui'
           app-categories: 'Utility'
 
-          
+
       # Create AppImage
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.full-app-name.outputs.value }}-${{ inputs.version }}.AppImage
-          path: ${{ steps.full-app-name.outputs.value }}-${{ inputs.version }}.AppImage
+          name: ${{ steps.full-app-name.outputs.value }}-Setup.AppImage
+          path: ${{ steps.full-app-name.outputs.value }}-x86_64.AppImage
           
 
 
