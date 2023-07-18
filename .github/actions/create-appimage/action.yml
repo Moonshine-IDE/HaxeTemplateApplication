@@ -7,7 +7,7 @@ inputs:
   app-version:
     description: 'Version of the application'
     required: true
-  app-icon:
+  app-icon-name:
     description: 'Path to the application icon'
     required: true
   app-categories:
@@ -65,7 +65,7 @@ runs:
       echo "[Desktop Entry]
         Name=${{ inputs.app-name }}
         Exec=${{ inputs.app-name }}
-        Icon=${{ inputs.app-icon }}
+        Icon=${{ inputs.app-icon-name }}
         Type=Application
         Categories=${{ inputs.app-categories }}
         X-AppImage-Name=${{ inputs.app-name }}
