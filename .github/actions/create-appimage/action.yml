@@ -22,7 +22,7 @@ inputs:
   share-paths:
     description: 'Comma-separated paths to the shared resources'
     required: true
-  apdir-paths:
+  appdir-paths:
     description: 'Comma-separated paths to other resources that go into the AppDir'
     required: true
   
@@ -52,7 +52,7 @@ runs:
           do cp -r $lib build/AppDir/usr/lib; 
         done
 
-        IFS=',' read -ra ADDR <<< "${{ inputs.resource-paths }}"
+        IFS=',' read -ra ADDR <<< "${{ inputs.appdir-paths }}"
         for resource in "${ADDR[@]}"; do 
           cp -r $resource build/AppDir/; 
         done
