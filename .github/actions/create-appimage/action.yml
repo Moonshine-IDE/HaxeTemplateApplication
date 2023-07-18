@@ -60,19 +60,19 @@ runs:
       shell: bash
 
     - name: Create Desktop file
-          shell: bash
-          run: |
-            cat << EOF > AppDir/${{ inputs.app-name }}.desktop
-            [Desktop Entry]
-            Name=${{ inputs.app-name }}
-            Exec=${{ inputs.app-name }}
-            Icon=${{ inputs.app-icon-name }}
-            Type=Application
-            Categories=${{ inputs.app-categories }}
-            X-AppImage-Name=${{ inputs.app-name }}
-            X-AppImage-Version=${{ inputs.app-version }}
-            X-AppImage-Arch=x86-64;" > AppDir/${{ inputs.app-name }}.desktop
-            EOF
+      shell: bash
+      run: |
+        cat << EOF > AppDir/${{ inputs.app-name }}.desktop
+        [Desktop Entry]
+        Name=${{ inputs.app-name }}
+        Exec=${{ inputs.app-name }}
+        Icon=${{ inputs.app-icon-name }}
+        Type=Application
+        Categories=${{ inputs.app-categories }}
+        X-AppImage-Name=${{ inputs.app-name }}
+        X-AppImage-Version=${{ inputs.app-version }}
+        X-AppImage-Arch=x86-64;" > AppDir/${{ inputs.app-name }}.desktop
+        EOF
 
     # - name: Create Desktop file
     #   shell: bash
