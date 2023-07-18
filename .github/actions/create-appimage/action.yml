@@ -35,7 +35,7 @@ runs:
     - name: Download AppImageTool
       shell: bash
       run: |
-        wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+        wget --quiet "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
         chmod a+x appimagetool-x86_64.AppImage
 
     - name: Create AppDir structure
@@ -79,9 +79,9 @@ runs:
       shell: bash
       run: |
         cat << EOF > AppDir/AppRun
-        echo "#!/bin/bash
-        HERE=\$(dirname \"\$(readlink -f \"\${0}\")\")
-        \$HERE/usr/bin/${{ inputs.app-name }}" > AppDir/AppRun
+        HERE="$(dirname "$(readlink -f "${0}")")"
+        EXEC="${HERE}/usr/bin/APP_NAME"
+        exec "${EXEC}"
         EOF
         chmod a+x AppDir/AppRun   
 
