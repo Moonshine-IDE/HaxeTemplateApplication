@@ -2,7 +2,7 @@
 <project>
 	<!-- project.xml reference: https://lime.software/docs/project-files/xml-format/ -->
 	
-	<meta title="APP_NAME APP_VERSION" package="APP_ID" version="VERSION" company="STARTcloud" />
+	<meta title="APP_NAME VERSION" package="APP_ID" version="VERSION" company="STARTcloud" />
 	
 	<app main="HaxeTemplateApplication" path="bin" file="APP_NAME" />
 
