@@ -19,7 +19,10 @@ inputs:
   lib-paths:
     description: 'Comma-separated paths to the libraries'
     required: true
-  resource-paths:
+  share-paths:
+    description: 'Comma-separated paths to the shared resources'
+    required: true
+  apdir-paths:
     description: 'Comma-separated paths to other resources that go into the AppDir'
     required: true
   
@@ -37,6 +40,7 @@ runs:
       run: |
         mkdir -p build/AppDir/usr/bin
         mkdir -p build/AppDir/usr/lib
+        mkdir -p build/AppDir/usr/share
 
         IFS=',' read -ra ADDR <<< "${{ inputs.bin-paths }}"
         for binary in "${ADDR[@]}"; do 
@@ -74,7 +78,7 @@ runs:
       run: |
         cat << EOF > build/AppDir/AppRun
         HERE="$(dirname "$(readlink -f "${0}")")"
-        EXEC="${HERE}/usr/bin/${{ inputs.app-name }}"
+        EXEC="\${HERE}/usr/bin/${{ inputs.app-name }}"
         exec "\${EXEC}"
         EOF
         chmod a+x build/AppDir/AppRun   

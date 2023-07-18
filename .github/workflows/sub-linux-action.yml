@@ -145,11 +145,11 @@ jobs:
         with:
           app-name: $APP_NAME
           app-version: ${{ inputs.version }}
-          bin-paths: 'bin/linux/bin/$APP_NAME'
-          lib-paths: 'bin/linux/bin/lime.ndll'
-          resource-paths: 'assets/feathersui.svg'
           app-icon-name: 'feathersui'
           app-categories: 'Utility'
+          bin-paths: 'bin/linux/bin/$APP_NAME'
+          lib-paths: 'bin/linux/bin/lime.ndll'
+          appdir-paths: 'assets/feathersui.svg'
 
 
       # Create AppImage
