@@ -77,7 +77,7 @@ runs:
       shell: bash
       run: |
         cat << EOF > build/AppDir/AppRun
-        HERE="\$(dirname "$(readlink -f "${0}")")"
+        HERE="\$(dirname "\$(readlink -f "\${0}")")"
         EXEC="\${HERE}/usr/bin/${{ inputs.app-name }}"
         exec "\${EXEC}"
         EOF
