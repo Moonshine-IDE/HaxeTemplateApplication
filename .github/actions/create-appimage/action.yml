@@ -20,11 +20,13 @@ runs:
 
     - name: Install dependencies
       run: sudo apt-get install -y libfuse2
+      shell: bash
 
     - name: Download AppImageTool
       run: |
         wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
         chmod a+x appimagetool-x86_64.AppImage
+      shell: bash
 
     - name: Create AppDir structure
       run: |
@@ -44,6 +46,8 @@ runs:
         for lib in "${ADDR[@]}"; 
           do cp -r $lib/* AppDir/usr/bin; 
         done
+      shell: bash
 
     - name: Debug output
       run: tree AppDir
+      shell: bash
