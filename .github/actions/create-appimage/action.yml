@@ -42,20 +42,18 @@ runs:
         mkdir -p build/AppDir/usr/lib
         mkdir -p build/AppDir/usr/share
 
-        IFS=',' read -ra ADDR <<< "${{ inputs.bin-paths }}"
-        for binary in "${ADDR[@]}"; do 
-          cp $binary build/AppDir/usr/bin; 
-        done
-
-        IFS=',' read -ra ADDR <<< "${{ inputs.lib-paths }}"
-        for lib in "${ADDR[@]}"; 
-          do cp -r $lib build/AppDir/usr/lib; 
-        done
-
-        IFS=',' read -ra ADDR <<< "${{ inputs.appdir-paths }}"
-        for resource in "${ADDR[@]}"; do 
-          cp -r $resource build/AppDir/; 
-        done
+        copy_files_to_appdir() {
+          IFS=',' read -ra FILES_TO_COPY <<< "$1"
+          for file in "${FILES_TO_COPY[@]}"; do 
+            cp -r $file $2; 
+          done
+        }
+        
+        set -e
+        copy_files_to_appdir "${{ inputs.bin-paths }}" "build/AppDir/usr/bin"
+        copy_files_to_appdir "${{ inputs.lib-paths }}" "build/AppDir/usr/lib"
+        copy_files_to_appdir "${{ inputs.share-paths }}" "build/AppDir/usr/share"
+        copy_files_to_appdir "${{ inputs.appdir-paths }}" "build/AppDir/"
 
     - name: Create Desktop file
       shell: bash
