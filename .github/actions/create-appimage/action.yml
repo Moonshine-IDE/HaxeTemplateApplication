@@ -83,14 +83,6 @@ runs:
         EOF
         chmod a+x build/AppDir/AppRun   
 
-    - name: Create AppImage
-      shell: bash
-      working-directory: build
-      run: |
-        wget --quiet "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
-        chmod a+x appimagetool-x86_64.AppImage
-        ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
-
     - name: Debug output
       run: |
         tree build
@@ -100,3 +92,11 @@ runs:
         echo AppRun:
         cat build/AppDir/AppRun
       shell: bash
+
+    - name: Create AppImage
+      shell: bash
+      working-directory: build
+      run: |
+        wget --quiet "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+        chmod a+x appimagetool-x86_64.AppImage
+        ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
