@@ -129,7 +129,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib install feathersui --quiet
           haxelib install amfio --quiet
-          haxelib install champaign --quiet
+          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
 
 
       # Build
