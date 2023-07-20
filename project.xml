@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-		
+	<!-- project.xml reference: https://lime.software/docs/project-files/xml-format/ -->
+	<meta title="HaxeTemplateApplication" package="com.example.HaxeTemplateApplication" version="1.0.0" company="STARTcloud" />
+	<app main="HaxeTemplateApplication" path="bin" file="HaxeTemplateApplication"/>
+
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="feathersui" />
