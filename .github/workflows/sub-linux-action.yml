@@ -129,6 +129,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib install feathersui --quiet
           haxelib install amfio --quiet
+          haxelib install champaign --quiet
 
 
       # Build
