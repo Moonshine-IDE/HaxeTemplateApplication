@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=APP_NAME VERSION
-Exec=APP_NAME
-Type=Application
-Icon=icon
-Categories=Utility
-X-AppImage-Name=APP_NAME X VERSION
-X-AppImage-Version=VERSION
-X-AppImage-Arch=x86-64

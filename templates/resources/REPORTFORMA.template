@@ -1,0 +1,11 @@
+---------------------------------------
+Details of Report (To Be Submitted)
+---------------------------------------
+
+Application Name:       $applicationName
+Application Version:    $applicationVersion
+OS/Version:             $OS
+User (If Any):          $userID
+Crash Log:
+
+$crashLog
