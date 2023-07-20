@@ -1,0 +1,13 @@
+{
+  "name": "HaxeTemplateApplication",
+  "url": "https://github.com/Moonshine-IDE/HaxeTemplateApplication",
+  "license": "MIT",
+  "tags": ["openfl", "haxe", "error-reporting", "template", "feathers-ui"],
+  "description": "An abstract template to use as Haxe/Feathers application",
+  "version": "1.0.0",
+  "releasenote": "Initial release.",
+  "contributors": ["rat-moonshine"],
+  "classPath": "src",
+  "dependencies": {
+  }
+}
