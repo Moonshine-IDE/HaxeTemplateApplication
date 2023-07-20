@@ -7,6 +7,7 @@ An abstract template to use as Haxe/Feathers-UI application.
 - Haxe 4.1
 - OpenFL 8.9.7
 - Feathers UI 1.0.0-rc.1
+- Champaign
 
 ## Installation
 
