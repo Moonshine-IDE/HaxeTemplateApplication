@@ -128,6 +128,7 @@ jobs:
           haxelib install openfl --quiet
           haxelib install actuate --quiet
           haxelib install feathersui --quiet
+          haxelib install amfio --quiet
 
 
       # Build
@@ -155,7 +156,7 @@ jobs:
       # Create AppImage
 
       - name: Upload AppImage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.full-app-name.outputs.value }}-Setup.AppImage
           path: build/${{ steps.full-app-name.outputs.value }}-x86_64.AppImage
