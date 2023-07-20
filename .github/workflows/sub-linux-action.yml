@@ -27,11 +27,7 @@ on:
         type: string
 
 env:
-  APP_NAME: >
-    [[ "${{ inputs.env }}" == "production" ]] 
-    && echo "HaxeTemplateApplication" 
-    || echo "HaxeTemplateApplicationDevelopment"
-
+  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   HAXE_ENV_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
@@ -40,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+
       - name: Build info
         run: |
           echo "Ref: ${{ github.ref_name }}"
