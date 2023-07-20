@@ -1,6 +1,6 @@
 # HaxeTemplateApplication
 
-An abstract template to use as Haxe/Feathers-UI application.
+An abstract template to use as OpenFL/Feathers-UI application.
 
 ## Minimum Requirements
 
