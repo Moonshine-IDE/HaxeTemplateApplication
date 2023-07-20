@@ -85,12 +85,6 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.APP_NAME }}"
 
-      - name: Check project.xml
-        run: cat project.xml
-
-      # Fail build
-      - name: Fail build
-        run: exit 1
 
       # Build preparation
 
