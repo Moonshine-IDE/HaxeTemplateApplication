@@ -1,7 +1,7 @@
-import net.prominic.base.haxeScripts.crashreport.AppTemplateConfiguration;
+import base.haxeScripts.crashreport.AppTemplateConfiguration;
 import openfl.events.Event;
 import feathers.core.PopUpManager;
-import net.prominic.base.views.containers.CrashNotification;
+import base.views.containers.CrashNotification;
 import feathers.events.FeathersEvent;
 import feathers.data.ButtonBarItemState;
 import feathers.controls.Alert;
@@ -11,7 +11,7 @@ import sys.FileSystem;
 import sys.io.File;
 import openfl.events.UncaughtErrorEvent;
 import openfl.Lib;
-import net.prominic.base.haxeScripts.updater.ApplicationUpdateManager;
+import base.haxeScripts.updater.ApplicationUpdateManager;
 import lime.system.System;
 import champaign.sys.logging.targets.FileTarget;
 import champaign.sys.logging.targets.SysPrintTarget;
