@@ -27,7 +27,11 @@ on:
         type: string
 
 env:
-  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  APP_NAME: >
+    ${{ inputs.env == 'production' 
+    && 'HaxeTemplateApplication' 
+    || 'HaxeTemplateApplicationDevelopment' }}
+
   APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   HAXE_ENV_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
@@ -76,7 +80,7 @@ jobs:
       
       
       # Replacing values in files
-
+      # -u {XPath} -v {NewValue} {InputXML}
       - name: Replace APP_NAME in project.xml
         uses: jacobtomlinson/gha-find-replace@v3
         with:
@@ -112,6 +116,9 @@ jobs:
           replace: ${{ inputs.version }}
           include: build/linux/**
 
+      # Fail build
+      - name: Fail build
+        run: exit 1
 
       # Build preparation
 
