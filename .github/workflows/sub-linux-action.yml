@@ -29,7 +29,7 @@ on:
 env:
   APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  HAXE_ENV_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
   build:
@@ -44,7 +44,7 @@ jobs:
           echo "Version: ${{ inputs.version }}"
           echo "App Name: ${{ env.APP_NAME }}"
           echo "App ID: ${{ env.APP_ID }}"
-          echo "Haxe Env Flag: ${{ env.HAXE_ENV_FLAG }}"
+          echo "Haxe Env Flag: ${{ env.HAXE_FLAG }}"
 
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -53,65 +53,17 @@ jobs:
       
       - name: Checkout LFS objects
         run: git lfs checkout
-
-
-      # Mapping values
-
-      - name: Map Env to full-app-name
-        uses: spilchen/switch-case-action@v2
-        id: full-app-name
-        with:
-          conditionals-with-values: |
-            ${{ inputs.env == 'production' }} => HaxeTemplateApplication
-            ${{ inputs.env == 'development' }} => HaxeTemplateApplicationDevelopment
-          default: HaxeTemplateApplication
-
-      - name: Map Env to haxe env flag
-        uses: spilchen/switch-case-action@v2
-        id: haxe-env-flag
-        with:
-          conditionals-with-values: |
-            ${{ inputs.env == 'production' }} => -final
-            ${{ inputs.env == 'development' }} => -debug
-          default: -final
       
       
       # Replacing values in files
-      # -u {XPath} -v {NewValue} {InputXML}
-      - name: Replace APP_NAME in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: APP_NAME
-          replace: ${{ steps.full-app-name.outputs.value }}
-          include: project.xml
-    
-      - name: Replace VERSION in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: VERSION
-          replace: ${{ inputs.version }}
-          include: project.xml
 
-      - name: Replace APP_ID in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
+      - name: Replace title in project.xml
+        uses: Mudlet/xmlstarlet-action@v1.1
         with:
-          find: APP_ID
-          replace: com.example.${{ steps.full-app-name.outputs.value }}
-          include: project.xml
+          args: -u /project/meta/title -v ${{ env.APP_NAME }} project.xml
 
-      - name: Replace APP_NAME in build/linux
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: APP_NAME
-          replace: ${{ steps.full-app-name.outputs.value }}
-          include: build/linux/**
-  
-      - name: Replace VERSION in build/linux
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: VERSION
-          replace: ${{ inputs.version }}
-          include: build/linux/**
+      - name: Check project.xml
+        run: cat project.xml
 
       # Fail build
       - name: Fail build
@@ -153,21 +105,19 @@ jobs:
       # Build
 
       - name: Build
-        run: haxelib run openfl build project.xml linux ${{ steps.haxe-env-flag.outputs.value }} -clean
+        run: haxelib run openfl build project.xml linux ${{ env.HAXE_FLAG }} -clean
 
 
       # Create AppImage
 
       - name: Create AppImage
-        env:
-          APP_NAME: ${{ steps.full-app-name.outputs.value }}
         uses: ./.github/actions/create-appimage
         with:
-          app-name: $APP_NAME
+          app-name: ${{ env.APP_NAME }}
           app-version: ${{ inputs.version }}
           app-icon-name: 'feathersui'
           app-categories: 'Utility'
-          bin-paths: 'bin/linux/bin/$APP_NAME'
+          bin-paths: 'bin/linux/bin/${{ env.APP_NAME }}'
           lib-paths: 'bin/linux/bin/lime.ndll'
           appdir-paths: 'assets/feathersui.svg'
 
@@ -177,8 +127,8 @@ jobs:
       - name: Upload AppImage
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.full-app-name.outputs.value }}-Setup.AppImage
-          path: build/${{ steps.full-app-name.outputs.value }}-x86_64.AppImage
+          name: ${{ env.APP_NAME }}-Setup.AppImage
+          path: build/${{ env.APP_NAME }}-x86_64.AppImage
           
 
 
