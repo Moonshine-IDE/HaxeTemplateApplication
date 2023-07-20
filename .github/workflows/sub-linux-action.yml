@@ -28,9 +28,9 @@ on:
 
 env:
   APP_NAME: >
-    ${{ inputs.env == 'production' 
-    && 'HaxeTemplateApplication' 
-    || 'HaxeTemplateApplicationDevelopment' }}
+    [[ "${{ inputs.env }}" == "production" ]] 
+    && echo "HaxeTemplateApplication" 
+    || echo "HaxeTemplateApplicationDevelopment"
 
   APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   HAXE_ENV_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
