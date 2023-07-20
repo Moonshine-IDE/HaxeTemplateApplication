@@ -26,11 +26,25 @@ on:
         required: true
         type: string
 
+env:
+  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  HAXE_ENV_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    steps:    
+    steps:
+      - name: Build info
+        run: |
+          echo "Ref: ${{ github.ref_name }}"
+          echo "Env: ${{ inputs.env }}"
+          echo "Version: ${{ inputs.version }}"
+          echo "App Name: ${{ env.APP_NAME }}"
+          echo "App ID: ${{ env.APP_ID }}"
+          echo "Haxe Env Flag: ${{ env.HAXE_ENV_FLAG }}"
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
