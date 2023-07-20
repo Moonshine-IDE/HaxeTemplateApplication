@@ -60,7 +60,7 @@ jobs:
       - name: Replace title in project.xml
         uses: Mudlet/xmlstarlet-action@v1.1
         with:
-          args: -u /project/meta/title -v ${{ env.APP_NAME }} project.xml
+          args: ed -u /project/meta/title -v ${{ env.APP_NAME }} project.xml
 
       - name: Check project.xml
         run: cat project.xml
