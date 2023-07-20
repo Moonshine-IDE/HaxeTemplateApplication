@@ -26,11 +26,26 @@ on:
         required: true
         type: string
 
+env:
+  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    steps:    
+    steps:
+
+      - name: Build info
+        run: |
+          echo "Ref: ${{ github.ref_name }}"
+          echo "Env: ${{ inputs.env }}"
+          echo "Version: ${{ inputs.version }}"
+          echo "App Name: ${{ env.APP_NAME }}"
+          echo "App ID: ${{ env.APP_ID }}"
+          echo "Haxe Env Flag: ${{ env.HAXE_FLAG }}"
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -38,65 +53,44 @@ jobs:
       
       - name: Checkout LFS objects
         run: git lfs checkout
-
-
-      # Mapping values
-
-      - name: Map Env to full-app-name
-        uses: spilchen/switch-case-action@v2
-        id: full-app-name
-        with:
-          conditionals-with-values: |
-            ${{ inputs.env == 'production' }} => HaxeTemplateApplication
-            ${{ inputs.env == 'development' }} => HaxeTemplateApplicationDevelopment
-          default: HaxeTemplateApplication
-
-      - name: Map Env to haxe env flag
-        uses: spilchen/switch-case-action@v2
-        id: haxe-env-flag
-        with:
-          conditionals-with-values: |
-            ${{ inputs.env == 'production' }} => -final
-            ${{ inputs.env == 'development' }} => -debug
-          default: -final
       
       
       # Replacing values in files
 
-      - name: Replace APP_NAME in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
+      - name: Override project.xml title
+        uses: Aszusz/xml-replace-action@master
         with:
-          find: APP_NAME
-          replace: ${{ steps.full-app-name.outputs.value }}
-          include: project.xml
-    
-      - name: Replace VERSION in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: VERSION
-          replace: ${{ inputs.version }}
-          include: project.xml
+          filepath: "project.xml"
+          xpath: "/project/meta/@title"
+          replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
 
-      - name: Replace APP_ID in project.xml
-        uses: jacobtomlinson/gha-find-replace@v3
+      - name: Override project.xml package
+        uses: Aszusz/xml-replace-action@master
         with:
-          find: APP_ID
-          replace: com.example.${{ steps.full-app-name.outputs.value }}
-          include: project.xml
+          filepath: "project.xml"
+          xpath: "/project/meta/@package"
+          replace: "${{ env.APP_ID }}"
 
-      - name: Replace APP_NAME in build/linux
-        uses: jacobtomlinson/gha-find-replace@v3
+      - name: Override project.xml version
+        uses: Aszusz/xml-replace-action@master
         with:
-          find: APP_NAME
-          replace: ${{ steps.full-app-name.outputs.value }}
-          include: build/linux/**
-  
-      - name: Replace VERSION in build/linux
-        uses: jacobtomlinson/gha-find-replace@v3
+          filepath: "project.xml"
+          xpath: "/project/meta/@version"
+          replace: "${{ inputs.version }}"
+
+      - name: Override project.xml file
+        uses: Aszusz/xml-replace-action@master
         with:
-          find: VERSION
-          replace: ${{ inputs.version }}
-          include: build/linux/**
+          filepath: "project.xml"
+          xpath: "/project/app/@file"
+          replace: "${{ env.APP_NAME }}"
+
+      - name: Check project.xml
+        run: cat project.xml
+
+      # Fail build
+      - name: Fail build
+        run: exit 1
 
       # Build preparation
 
@@ -127,62 +121,38 @@ jobs:
           haxelib install openfl --quiet
           haxelib install actuate --quiet
           haxelib install feathersui --quiet
+          haxelib install amfio --quiet
+          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
 
 
       # Build
 
       - name: Build
-        run: haxelib run openfl build project.xml linux ${{ steps.haxe-env-flag.outputs.value }} -clean
+        run: haxelib run openfl build project.xml linux ${{ env.HAXE_FLAG }} -clean
 
 
-      # AppImage
+      # Create AppImage
 
-      - name: Make AppDir
-        env:
-          APP_NAME: ${{ steps.full-app-name.outputs.value }}
-        run: |
-          mkdir build/linux/${{ env.APP_NAME }}.AppDir
-          mkdir build/linux/${{ env.APP_NAME }}.AppDir/usr
-          mkdir build/linux/${{ env.APP_NAME }}.AppDir/usr/bin
-          mkdir build/linux/${{ env.APP_NAME }}.AppDir/usr/lib
-
-          cp bin/linux/bin/${{ env.APP_NAME }} build/linux/${{ env.APP_NAME }}.AppDir/usr/bin/
-          cp bin/linux/bin/lime.ndll build/linux/${{ env.APP_NAME }}.AppDir/usr/lib/lime.ndll
-          cp assets/feathersui.svg build/linux/${{ env.APP_NAME }}.AppDir/icon.svg
-          cp build/linux/AppRun build/linux/${{ env.APP_NAME }}.AppDir/
-          cp build/linux/.desktop build/linux/${{ env.APP_NAME }}.AppDir/${{ env.APP_NAME }}.desktop  
-          
-          chmod +x build/linux/${{ env.APP_NAME }}.AppDir/AppRun
-          chmod +x build/linux/${{ env.APP_NAME }}.AppDir/usr/bin/${{ env.APP_NAME }}
-
-      - name: Debug AppImage
-        run: |
-          echo project.xml
-          cat project.xml
-          echo
-
-          echo ${{ steps.full-app-name.outputs.value }}.desktop
-          cat build/linux/${{ steps.full-app-name.outputs.value }}.AppDir/${{ steps.full-app-name.outputs.value }}.desktop
-          echo
-
-          echo AppRun
-          cat build/linux/${{ steps.full-app-name.outputs.value }}.AppDir/AppRun
-          echo
-
-      - name: Make AppImage
-        run: |
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-          ./appimagetool-x86_64.AppImage build/linux/${{ steps.full-app-name.outputs.value }}.AppDir
-          tree build
+      - name: Create AppImage
+        uses: ./.github/actions/create-appimage
+        with:
+          app-name: ${{ env.APP_NAME }}
+          app-version: ${{ inputs.version }}
+          app-icon-name: 'feathersui'
+          app-categories: 'Utility'
+          bin-paths: 'bin/linux/bin/${{ env.APP_NAME }}'
+          lib-paths: 'bin/linux/bin/lime.ndll'
+          appdir-paths: 'assets/feathersui.svg'
 
 
-      # Deployment
+      # Create AppImage
 
-      - name: Upload build artifact
-        env:
-          APP_NAME: ${{ steps.full-app-name.outputs.value }}
+      - name: Upload AppImage
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.APP_NAME }}-Setup.AppImage
-          path: ${{ env.APP_NAME }}_${{ inputs.version }}-x86_64.AppImage
+          path: build/${{ env.APP_NAME }}-x86_64.AppImage
+          
+
+
+     
