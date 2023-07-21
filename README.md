@@ -11,7 +11,7 @@ An abstract template to use as OpenFL/Feathers-UI application.
 
 ## Installation
 
-This library is not yet available on Haxelib. To install, run the following command in a terminal:
+To install, run the following command in a terminal:
 
 ```sh
 haxelib git haxetemplateapplication https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
