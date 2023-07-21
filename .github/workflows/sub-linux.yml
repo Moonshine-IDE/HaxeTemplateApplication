@@ -60,28 +60,28 @@ jobs:
       - name: Override project.xml title
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
-          filepath: "project.xml"
+          filepath: "test/openfl/project.xml"
           xpath: "/project/meta/@title"
           replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
 
       - name: Override project.xml package
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
-          filepath: "project.xml"
+          filepath: "test/openfl/project.xml"
           xpath: "/project/meta/@package"
           replace: "${{ env.APP_ID }}"
 
       - name: Override project.xml version
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
-          filepath: "project.xml"
+          filepath: "test/openfl/project.xml"
           xpath: "/project/meta/@version"
           replace: "${{ inputs.version }}"
 
       - name: Override project.xml file
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
-          filepath: "project.xml"
+          filepath: "test/openfl/project.xml"
           xpath: "/project/app/@file"
           replace: "${{ env.APP_NAME }}"
 
@@ -122,7 +122,7 @@ jobs:
       # Build
 
       - name: Build
-        run: haxelib run openfl build project.xml linux ${{ env.HAXE_FLAG }} -clean
+        run: haxelib run openfl build test/openfl/project.xml linux ${{ env.HAXE_FLAG }} -clean
 
 
       # Create AppImage
