@@ -38,3 +38,8 @@ After installing the library above, add it to your OpenFL _project.xml_ file:
 ```xml
 <haxelib name="haxetemplateapplication" />
 ```
+
+## Example
+
+An OpenFL sample application can be found at:
+https://github.com/Moonshine-IDE/HaxeTemplateApplication/tree/main/test/openfl
