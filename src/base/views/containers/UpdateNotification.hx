@@ -96,7 +96,7 @@ class UpdateNotification extends TitleWindow
         btnClose.addEventListener(TriggerEvent.TRIGGER, onCloseEvent, false, 0, true);
         this.addChild(btnClose);*/
 
-        var imgInstall = new AssetLoader("theme/images/imgInstall.png");
+        var imgInstall = new AssetLoader("images/imgInstall.png");
         imgInstall.width = 135;
         imgInstall.height = 151;
         this.rootContainer.addChild(imgInstall);

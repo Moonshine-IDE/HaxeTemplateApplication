@@ -87,7 +87,7 @@ class CrashNotification extends TitleWindow
         this.messageContainer.layout = messageContainerLayout;
         this.addChild(this.messageContainer);
 
-        var imgInstall = new AssetLoader("theme/images/warning.png");
+        var imgInstall = new AssetLoader("images/warning.png");
         imgInstall.width = 62;
         imgInstall.height = 55;
         this.messageContainer.addChild(imgInstall);
@@ -178,6 +178,7 @@ class CrashNotification extends TitleWindow
         txtDetails.textFormat = new TextFormat("_typewriter", 14);
         txtDetails.layoutData = new VerticalLayoutData(100, 100);
         txtDetails.wordWrap = true;
+        txtDetails.editable = false;
         container.addChild(txtDetails);
         
         return container;

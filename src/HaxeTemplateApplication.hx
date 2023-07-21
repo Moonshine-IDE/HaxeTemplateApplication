@@ -214,8 +214,8 @@ abstract class HaxeTemplateApplication extends feathers.controls.Application
 
     private function onHaxeException( e:Dynamic ):Void
     {
-        if ( Std.isOfType( e, Exception ) && !Std.isOfType( e, ValueException ) ) {
-            Logger.fatal( 'Fatal exception : ${e}\nDetails : ${e.details()}\nNative : ${e.native}' );
+        if ( Std.isOfType( e, Exception ) ) {
+            Logger.fatal( 'Fatal exception : ${e}\nDetails : ${cast( e, Exception ).details()}\nNative : ${e.native}' );
         } else {
             Logger.fatal( 'Fatal error: ${e}' );
         }
