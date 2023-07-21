@@ -17,7 +17,7 @@ This library is not yet available on Haxelib. To install, run the following comm
 haxelib git haxetemplateapplication https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
 ```
 
-## Development Builds
+## Development Use
 
 Clone the repository:
 
