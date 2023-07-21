@@ -58,28 +58,28 @@ jobs:
       # Replacing values in files
 
       - name: Override project.xml title
-        uses: Aszusz/xml-replace-action@master
+        uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "project.xml"
           xpath: "/project/meta/@title"
           replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
 
       - name: Override project.xml package
-        uses: Aszusz/xml-replace-action@master
+        uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "project.xml"
           xpath: "/project/meta/@package"
           replace: "${{ env.APP_ID }}"
 
       - name: Override project.xml version
-        uses: Aszusz/xml-replace-action@master
+        uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "project.xml"
           xpath: "/project/meta/@version"
           replace: "${{ inputs.version }}"
 
       - name: Override project.xml file
-        uses: Aszusz/xml-replace-action@master
+        uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "project.xml"
           xpath: "/project/app/@file"
