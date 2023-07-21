@@ -17,6 +17,20 @@ This library is not yet available on Haxelib. To install, run the following comm
 haxelib git haxetemplateapplication https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
 ```
 
+## Development Use
+
+Clone the repository:
+
+    git clone https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
+
+Tell haxelib where your development copy of HaxeTemplateApplication is installed:
+
+    haxelib dev haxetemplateapplication path/to/download/directory
+
+To return to release builds:
+
+    haxelib dev haxetemplateapplication
+
 ## Project Configuration
 
 After installing the library above, add it to your OpenFL _project.xml_ file:
@@ -24,3 +38,8 @@ After installing the library above, add it to your OpenFL _project.xml_ file:
 ```xml
 <haxelib name="haxetemplateapplication" />
 ```
+
+## Example
+
+An OpenFL sample application can be found at:
+https://github.com/Moonshine-IDE/HaxeTemplateApplication/tree/main/test/openfl

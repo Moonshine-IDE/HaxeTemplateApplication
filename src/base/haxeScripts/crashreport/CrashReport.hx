@@ -1,5 +1,6 @@
 package base.haxeScripts.crashreport;
 
+import lime.system.System;
 import feathers.controls.Alert;
 import haxe.Json;
 import haxe.xml.Access;
@@ -76,22 +77,24 @@ class CrashReport extends EventDispatcher
 
         if (FileSystem.exists(filePath))
         {
-            var fs = new FileStream();
-            fs.open(new File(filePath), FileMode.READ);
-            this._log = fs.readUTFBytes(fs.bytesAvailable);
-            fs.close();
+            this._log = this.readFrom(new File(filePath));
         }
     }
 
     public function getReportInText():String
     {
-        var reportFormat = Resource.getString("REPORTFORMA");
-        reportFormat = StringTools.replace(reportFormat, "$applicationName", _appName);
-        reportFormat = StringTools.replace(reportFormat, "$applicationVersion", _appVersion);
-        reportFormat = StringTools.replace(reportFormat, "$OS", _os);
-        reportFormat = StringTools.replace(reportFormat, "$userID", "N/A");
-        reportFormat = StringTools.replace(reportFormat, "$crashLog", _log);
-
+        var reportFormat:String = "";
+        
+        if (FileSystem.exists(System.applicationDirectory + "resources/REPORTFORMA.template"))
+        {
+            reportFormat = this.readFrom(new File(System.applicationDirectory + "resources/REPORTFORMA.template"));
+            reportFormat = StringTools.replace(reportFormat, "$applicationName", _appName);
+            reportFormat = StringTools.replace(reportFormat, "$applicationVersion", _appVersion);
+            reportFormat = StringTools.replace(reportFormat, "$OS", _os);
+            reportFormat = StringTools.replace(reportFormat, "$userID", "N/A");
+            reportFormat = StringTools.replace(reportFormat, "$crashLog", _log);    
+        }
+        
         return reportFormat;
     }
 
@@ -132,5 +135,15 @@ class CrashReport extends EventDispatcher
     private function onReportPostError(event:IOErrorEvent):Void
     {
         
+    }
+
+    private function readFrom(file:File):String
+    {
+        var fs = new FileStream();
+        fs.open(file, FileMode.READ);
+        var value = fs.readUTFBytes(fs.bytesAvailable);
+        fs.close();
+
+        return value;
     }
 }
