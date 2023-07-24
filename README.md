@@ -11,7 +11,7 @@ An abstract template to use as OpenFL/Feathers-UI application.
 
 ## Installation
 
-Update dependencies in your application's [project.xml](https://github.com/Moonshine-IDE/HaxeTemplateApplication/project.xml).
+Update dependencies in your application's [project.xml](https://github.com/Moonshine-IDE/HaxeTemplateApplication/blob/main/project.xml).
 
 Extend application using the base _Application_ template:
 
