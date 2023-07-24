@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="HaxeTemplateApplication" package="HaxeTemplateApplication" version="1.0.0" company="CompanyName" />
+	<app main="HaxeTemplateApplication" path="bin" file="HaxeTemplateApplication" />
+
+	<window allow-high-dpi="true" />
+	<window fps="30"/>
+	<window fps="0" if="html5"/>
+	<window width="1128" height="768"/>
+	
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="feathersui" />
+	<haxelib name="amfio"/>
+	<haxelib name="champaign"/>
+
+	<!-- classpath -->
+	<source path="src" />
+	
+	<!-- BEGINS::TEMPLATE CONFIGURATION -->
+
+	<template path="src/base/templates" />
+
+	<assets path="src/base/source/themes/assets" rename="images" />
+	<assets path="src/base/templates/resources" rename="resources" />
+	
+	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE"/>
+	<haxedef name="HXCPP_CHECK_POINTER"/>
+	
+	<!-- ENDS::TEMPLATE CONFIGURATION -->
+
+	<haxeflag name="--macro" value="include('feathers')"/>
+</project>

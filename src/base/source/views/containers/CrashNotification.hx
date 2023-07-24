@@ -1,19 +1,16 @@
-package base.views.containers;
+package base.source.views.containers;
 
+import base.source.haxeScripts.crashreport.AppTemplateConfiguration;
+import base.source.haxeScripts.crashreport.CrashReport;
+import base.feathers.controls.TitleWindow;
 import openfl.Lib;
-import haxe.Resource;
 import feathers.controls.TextArea;
-import feathers.controls.FormItem;
-import feathers.controls.Form;
 import feathers.controls.ScrollContainer;
-import base.haxeScripts.crashreport.CrashReport;
 import feathers.core.PopUpManager;
 import openfl.events.MouseEvent;
 import feathers.controls.AssetLoader;
-import feathers.controls.TitleWindow;
 import feathers.layout.HorizontalLayoutData;
 import feathers.layout.VerticalLayoutData;
-import feathers.controls.HProgressBar;
 import openfl.events.Event;
 import feathers.events.TriggerEvent;
 import feathers.text.TextFormat;
@@ -22,10 +19,7 @@ import feathers.layout.VerticalLayout;
 import feathers.layout.HorizontalLayout;
 import feathers.controls.Button;
 import feathers.skins.RectangleSkin;
-import feathers.layout.AnchorLayoutData;
-import feathers.layout.AnchorLayout;
 import feathers.controls.LayoutGroup;
-import feathers.core.InvalidationFlag;
 
 class CrashNotification extends TitleWindow
 {
@@ -42,7 +36,7 @@ class CrashNotification extends TitleWindow
         return _crashReport;
     }
 
-    private final messageWithCrashLog = "Application crashed during the previous session. Please contact $companyName Support for further assistance. Optionally you may open the crash log file generated in the previous session.";
+    private final messageWithCrashLog = "Application crashed during the previous session. Please contact $companyName Support for further assistance. You may review the report before a submit.";
     private final messageWithoutCrashLog = "Application crashed during the previous launch. Please contact $companyName Support for further assistance.";
 
     private var messageContainer:LayoutGroup;
@@ -138,14 +132,16 @@ class CrashNotification extends TitleWindow
         buttonsContainer.layoutData = new VerticalLayoutData(100);
         buttonsLinesContainer.addChild(buttonsContainer);
 
-        if (this.crashLogExists)
+        var appConfig = AppTemplateConfiguration.getInstance();
+        var showSubmitButton = this.crashLogExists && (appConfig.crashReportSubmissionURL != null);
+        if (showSubmitButton)
         {
             var btnSubmit = new Button("Submit Crash Report");
             btnSubmit.addEventListener(TriggerEvent.TRIGGER, onSubmit, false, 0, true);
             buttonsContainer.addChild(btnSubmit);    
         }
 
-        var btnContinue = new Button(this.crashLogExists ? "Do Not Submit" : "Continue");
+        var btnContinue = new Button(showSubmitButton ? "Do Not Submit" : "Continue");
         btnContinue.addEventListener(TriggerEvent.TRIGGER, onCloseEvent, false, 0, true);
         buttonsContainer.addChild(btnContinue);
 

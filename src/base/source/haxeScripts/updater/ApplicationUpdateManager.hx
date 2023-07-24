@@ -1,6 +1,6 @@
-package base.haxeScripts.updater;
+package base.source.haxeScripts.updater;
 
-import base.views.containers.UpdateNotification;
+import base.source.views.containers.UpdateNotification;
 import feathers.controls.Alert;
 import feathers.core.PopUpManager;
 import feathers.controls.Application;

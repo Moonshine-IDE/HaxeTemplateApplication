@@ -1,4 +1,4 @@
-package feathers.controls;
+package base.feathers.controls;
 
 import openfl.display.Shape;
 import feathers.controls.ButtonState;

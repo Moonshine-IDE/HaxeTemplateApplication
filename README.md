@@ -11,35 +11,50 @@ An abstract template to use as OpenFL/Feathers-UI application.
 
 ## Installation
 
-To install, run the following command in a terminal:
+Update dependencies in your application's [project.xml](https://github.com/Moonshine-IDE/HaxeTemplateApplication/project.xml).
 
-```sh
-haxelib git haxetemplateapplication https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
+Extend application using the base _Application_ template:
+
+`class YourApplication extends BaseTemplateApplication`
+
+## Features
+
+### Application, excepion/crash logging
+
+Automatic
+
+### Crash-log submission (optional)
+
+To enable, provide an URL to submit, in extending Application.
+For more information on fields to submit:
+https://github.com/Moonshine-IDE/FormBuilder-Crash-Report
+
+`appTemplateConfiguration.crashReportSubmissionURL = "-url-to-report-post-";`
+
+### Application update check (optional)
+
+To enable, provide an URL to update-check/XML, in extending Application:
+
+`appTemplateConfiguration.updateCheckURL = "-url-to-update-check-/updater.xml";`
+
+Supported XML format:
 ```
-
-## Development Use
-
-Clone the repository:
-
-    git clone https://github.com/Moonshine-IDE/HaxeTemplateApplication.git
-
-Tell haxelib where your development copy of HaxeTemplateApplication is installed:
-
-    haxelib dev haxetemplateapplication path/to/download/directory
-
-To return to release builds:
-
-    haxelib dev haxetemplateapplication
-
-## Project Configuration
-
-After installing the library above, add it to your OpenFL _project.xml_ file:
-
-```xml
-<haxelib name="haxetemplateapplication" />
+<update>
+	<!--  Mac update  -->
+	<pkg>
+		<version>1.0.0</version>
+		<url> -- url to pkg installer -- </url>
+		<description>
+			<![CDATA[ * This a Mac update ]]>
+		</description>
+	</pkg>
+	<!--  Win update  -->
+	<exe>
+		<version>1.0.0</version>
+		<url> -- url to windows installer -- </url>
+		<description>
+			<![CDATA[ * This a Win update ]]>
+		</description>
+	</exe>
+ </update>
 ```
-
-## Example
-
-An OpenFL sample application can be found at:
-https://github.com/Moonshine-IDE/HaxeTemplateApplication/tree/main/test/openfl

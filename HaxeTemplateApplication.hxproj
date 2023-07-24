@@ -14,15 +14,17 @@
     <class path="src"/>
   </classpaths>
   <build>
-    <option noInlineOnDebug="False"/>
-    <option enabledebug="True"/>
     <option flashStrict="False"/>
-    <option directives=""/>
-    <option mainClass=""/>
+    <option HaxeTemplateApplicationClass="HaxeTemplateApplication"/>
+    <option enabledebug="True"/>
     <option additional="--macro openfl._internal.macros.ExtraParams.include()&#xA;--macro lime._internal.macros.DefineMacro.run()&#xA;--remap flash:openfl&#xA;--no-output "/>
+    <option noInlineOnDebug="False"/>
+    <option directives=""/>
   </build>
   <haxelib/>
-  <compileTargets></compileTargets>
+  <compileTargets>
+    <compile path="src/HaxeTemplateApplication.hx"/>
+  </compileTargets>
   <hiddenPaths>
     <hidden path="obj"/>
   </hiddenPaths>
@@ -30,8 +32,8 @@
   <postBuildCommand alwaysRun="False"/>
   <options>
     <option testMovieCommand=""/>
-    <option showHiddenPaths="False"/>
     <option testMovie="Custom"/>
+    <option showHiddenPaths="False"/>
   </options>
   <moonshineRunCustomization>
     <option webBrowser="Google Chrome"/>

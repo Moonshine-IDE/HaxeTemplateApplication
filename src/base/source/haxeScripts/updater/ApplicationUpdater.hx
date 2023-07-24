@@ -1,4 +1,4 @@
-package base.haxeScripts.updater;
+package base.source.haxeScripts.updater;
 
 import lime.system.System;
 import openfl.net.URLLoaderDataFormat;

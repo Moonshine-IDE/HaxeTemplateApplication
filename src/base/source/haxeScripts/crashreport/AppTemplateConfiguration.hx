@@ -1,4 +1,4 @@
-package base.haxeScripts.crashreport;
+package base.source.haxeScripts.crashreport;
 
 class AppTemplateConfiguration 
 {

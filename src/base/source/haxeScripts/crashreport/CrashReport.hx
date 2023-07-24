@@ -1,4 +1,4 @@
-package base.haxeScripts.crashreport;
+package base.source.haxeScripts.crashreport;
 
 import lime.system.System;
 import feathers.controls.Alert;
@@ -126,7 +126,7 @@ class CrashReport extends EventDispatcher
     private function onReportPostSuccess(event:Event):Void
     {
         var response = Json.parse(event.target.data);
-        if ((response.errorMessage != null) || (response.errorMessage != ""))
+        if ((response.errorMessage != null) && (response.errorMessage != ""))
         {
             Alert.show(response.errorMessage, "Warning (Server)", ["OK"]);
         }

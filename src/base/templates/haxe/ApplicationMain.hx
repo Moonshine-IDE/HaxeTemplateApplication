@@ -6,6 +6,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+import base.source.haxeScripts.crashreport.ExceptionListener;
+
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
@@ -14,8 +16,6 @@ import haxe.macro.Expr;
 class ApplicationMain
 {
 	#if !macro
-
-	public static final onException:List<(Dynamic)->Void> = new List();
 
 	public static function main()
 	{
@@ -29,7 +29,7 @@ class ApplicationMain
 		try {
 			create(null);
 		} catch ( e ) {
-			for ( f in onException ) f( e );
+			for ( f in ExceptionListener.onException ) f( e );
 		}
 		#end
 	}
