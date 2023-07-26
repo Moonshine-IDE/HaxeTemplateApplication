@@ -117,8 +117,7 @@ jobs:
         run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
 
       - name: Show Build
-        working-directory: GBAuthHaxeMaster
-        run: tree ./bin/windows/bin
+        run: tree bin/windows/bin
 
       # Create Windows Installer
 
@@ -128,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.APP_NAME }}-bin
-          path: ./bin/windows/bin
+          path: bin/windows/bin
           
 
 
