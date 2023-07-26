@@ -1,0 +1,143 @@
+name: SUB - Build Windows
+
+on:    
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+
+  workflow_call:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: string
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+
+env:
+  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+
+      - name: Build info
+        run: |
+          echo "Ref: ${{ github.ref_name }}"
+          echo "Env: ${{ inputs.env }}"
+          echo "Version: ${{ inputs.version }}"
+          echo "App Name: ${{ env.APP_NAME }}"
+          echo "App ID: ${{ env.APP_ID }}"
+          echo "HAXE_FLAG: ${{ env.HAXE_FLAG }}"
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      
+      - name: Checkout LFS objects
+        run: git lfs checkout
+      
+      
+      # Replacing values in files
+
+      - name: Override project.xml title
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@title"
+          replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
+
+      - name: Override project.xml package
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@package"
+          replace: "${{ env.APP_ID }}"
+
+      - name: Override project.xml version
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@version"
+          replace: "${{ inputs.version }}"
+
+      - name: Override project.xml file
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/app/@file"
+          replace: "${{ env.APP_NAME }}"
+
+
+      # Build preparation
+
+      - name: Install missing system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libfuse2
+
+      - name: Set up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Show haxe info
+        run: |
+          echo "Haxe version:"
+          haxe -version
+          echo "Haxe lib path:"
+          haxelib config
+
+      - name: Update haxelib
+        run: haxelib --global update haxelib --quiet
+
+      - name: Install haxelib dependencies
+        run: |          
+          haxelib install hxcpp --quiet
+          haxelib install lime --quiet          
+          haxelib install openfl --quiet
+          haxelib install actuate --quiet
+          haxelib install feathersui --quiet
+          haxelib install amfio --quiet
+          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
+
+
+      # Build
+
+      - name: Build
+        run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
+
+      - name: Show Build
+        working-directory: GBAuthHaxeMaster
+        run: tree ./bin/windows/bin
+
+      # Create Windows Installer
+
+      # Create AppImage
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.APP_NAME }}-bin
+          path: ./bin/windows/bin
+          
+
+
+     
