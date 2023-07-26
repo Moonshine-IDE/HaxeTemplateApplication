@@ -116,9 +116,6 @@ jobs:
       - name: Build
         run: haxelib run openfl build ./project.xml mac ${{ env.HAXE_FLAG }} -clean
 
-      - name: Show Build
-        run: tree bin/macos/bin
-
       # Create package
 
       # Upload bin
