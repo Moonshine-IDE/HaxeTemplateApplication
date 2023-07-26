@@ -85,14 +85,6 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.APP_NAME }}"
 
-
-      # Build preparation
-
-      - name: Install missing system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install libfuse2
-
       - name: Set up Haxe
         uses: krdlab/setup-haxe@v1
         with:
