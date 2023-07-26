@@ -126,7 +126,7 @@ jobs:
           productbuild \
             --version "${{ inputs.VERSION }}" \
             --identifier ${{ env.APP_ID }} \
-            --component GBAuthHaxeMaster/bin/macos/bin/${{ env.APP_NAME }}.app \
+            --component bin/macos/bin/${{ env.APP_NAME }}.app \
             /Applications \
             ${{ env.APP_NAME }}-Setup-Unsigned.pkg
 
