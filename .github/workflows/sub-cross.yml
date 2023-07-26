@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: crazymax/osxcross
+      image: ghcr.io/crazy-max/osxcross
     steps:
 
     - name: Build info
