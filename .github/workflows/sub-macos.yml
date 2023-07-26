@@ -121,6 +121,15 @@ jobs:
 
       # Create package
 
+      - name: Create package
+        run: |
+          productbuild \
+            --version "${{ inputs.VERSION }}" \
+            --identifier ${{ env.APP_ID }} \
+            --component GBAuthHaxeMaster/bin/macos/bin/${{ env.APP_NAME }}.app \
+            /Applications \
+            ${{ env.APP_NAME }}-Setup-Unsigned.pkg
+
       # Upload bin
 
       - name: Upload bin
@@ -128,6 +137,12 @@ jobs:
         with:
           name: ${{ env.APP_NAME }}-bin
           path: bin/macos/bin
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.APP_NAME }}-Setup
+          path: ${{ env.APP_NAME }}-Setup-Unsigned.pkg
           
 
 
