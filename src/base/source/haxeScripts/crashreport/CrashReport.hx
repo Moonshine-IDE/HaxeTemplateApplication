@@ -130,11 +130,15 @@ class CrashReport extends EventDispatcher
         {
             Alert.show(response.errorMessage, "Warning (Server)", ["OK"]);
         }
+        else
+        {
+            Alert.show("Report submitted successfully!", "Note!", ["OK"]);
+        }
     }
 
     private function onReportPostError(event:IOErrorEvent):Void
     {
-        
+        Alert.show("Failed to submit crash report!\n"+ event.text, "Error!", ["OK"]);
     }
 
     private function readFrom(file:File):String
