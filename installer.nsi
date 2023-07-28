@@ -14,6 +14,9 @@
 ; Include nsProcess plugin
 !include "nsProcess.nsh"
 
+; Include VersionCompare
+!include "WordFunc.nsh"
+
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_EXE}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -54,7 +57,34 @@ InstallDirRegKey ${ROOT_KEY} "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
-Function checkIfAppIsRunning
+Function handleUpgradeDowngradeReinstall
+  ReadRegStr $R0 ${ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion"
+  ${VersionCompare} $R0 ${PRODUCT_VERSION} $R1
+  IntCmp $R1 0 reinstall
+  IntCmp $R1 1 downgrade
+  IntCmp $R1 2 upgrade
+
+  reinstall:
+    MessageBox MB_YESNO|MB_ICONQUESTION \
+    "The same version (${PRODUCT_VERSION}) of ${PRODUCT_NAME} is already installed.$\n$\nDo you want to reinstall it?" \
+    IDYES install IDNO abort
+
+  downgrade:
+    MessageBox MB_YESNO "Newer version ($R0) of ${PRODUCT_NAME} is already installed.$\n$\nDo you want to downgrade?" \
+    IDYES install IDNO abort
+
+  upgrade:
+    Goto install
+
+  install:
+    Return
+
+  abort:
+    Abort
+
+FunctionEnd
+
+Function handleRunningApplication
   loop:
     ${nsProcess::FindProcess} "${PRODUCT_EXE}" $R0
     IntCmp $R0 0 appIsRunning appIsNotRunning appIsNotRunning  
@@ -87,7 +117,8 @@ FunctionEnd
 
 
 Function .onInit
-  Call checkIfAppIsRunning
+  Call handleUpgradeDowngradeReinstall
+  Call handleRunningApplication
 FunctionEnd
 
 Section "MainSection" SEC01
