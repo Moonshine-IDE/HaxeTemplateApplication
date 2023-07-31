@@ -141,17 +141,17 @@ jobs:
 
       # Create Windows Installer
 
-      # - name: Install NSIS
-      #   uses: moonshine-ide/nsis-installer-action@master
-      #   with:
-      #     product_name: ${{ env.APP_NAME }}
-      #     product_version: ${{ inputs.version }}
-      #     product_publisher: "STARTcloud, Inc."
-      #     product_website: "https://moonshine-ide.com/"
-      #     product_exe: ${{ env.APP_NAME }}.exe
-      #     bin_path: bin/windows/bin
-      #     product_installer: ${{ env.APP_NAME }}-Setup.exe
-      #     product_license: LICENSE.md
+      - name: Install NSIS
+        uses: moonshine-ide/nsis-installer-action@master
+        with:
+          product_name: ${{ env.APP_NAME }}
+          product_version: ${{ inputs.version }}
+          product_publisher: "STARTcloud, Inc."
+          product_website: "https://moonshine-ide.com/"
+          product_exe: ${{ env.APP_NAME }}.exe
+          bin_path: bin/windows/bin/*.*
+          product_installer: ${{ env.APP_NAME }}-Setup.exe
+          product_license: LICENSE.md
 
 
       # Upload artifacts
@@ -162,11 +162,11 @@ jobs:
           name: ${{ env.APP_NAME }}-bin
           path: bin/windows/bin
 
-      # - name: Upload installer
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ env.APP_NAME }}-bin
-      #     path: ${{ env.APP_NAME }}-Setup.exe
+      - name: Upload installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.APP_NAME }}-bin
+          path: ${{ env.APP_NAME }}-Setup.exe
           
 
 
