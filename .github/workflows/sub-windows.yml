@@ -137,7 +137,7 @@ jobs:
         run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
 
       - name: Show Build
-        run: tree bin/windows/bin
+        run: ls -r bin\windows\bin
 
       # Create Windows Installer
 
