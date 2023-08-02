@@ -171,7 +171,7 @@ jobs:
         run: |
           codesign GBAuthHaxeMaster/bin/macos/bin/${{ env.APP_NAME }}.app \
             --sign "Developer ID Application" \
-            --entitlements GBAuthHaxeMaster/build/entitlement-non-sandbox.plist \
+            --entitlements build/minimal.plist \
             --options runtime \
             --force \
             --timestamp \
