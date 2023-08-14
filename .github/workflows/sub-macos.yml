@@ -129,6 +129,8 @@ jobs:
           echo "Keychain created"
           security set-keychain-settings -lut 21600 build.keychain
           echo "Keychain settings set"
+          security default-keychain -s build.keychain
+          echo "Keychain made default"
           security unlock-keychain -p "$MAC_KEYCHAIN_PASS" build.keychain  
           echo "Keychain unlocked"
 
