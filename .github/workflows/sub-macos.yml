@@ -169,7 +169,6 @@ jobs:
         run: |
           codesign bin/macos/bin/${{ env.APP_NAME }}.app \
             --sign "Developer ID Application" \
-            --keychain ~/Library/Keychains/build.keychain-db
             --entitlements build/minimal.plist \
             --options runtime \
             --force \
