@@ -110,16 +110,16 @@ jobs:
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
-      # - name: Chaching
-      #   id: cache-bin
-      #   if: ${{ inputs.caching }}
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: bin/windows/bin
-      #     key: ${{ env.APP_NAME }}-windows-bin
+      - name: Chaching
+        id: cache-bin
+        if: ${{ inputs.caching }}
+        uses: actions/cache@v3
+        with:
+          path: bin/windows/bin
+          key: ${{ env.APP_NAME }}-windows-bin
 
       - name: Install haxelib dependencies
-        # if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: |          
           haxelib install hxcpp --quiet
           haxelib install lime --quiet          
@@ -133,7 +133,7 @@ jobs:
       # Build
 
       - name: Build
-        # if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
 
       - name: Show Build
