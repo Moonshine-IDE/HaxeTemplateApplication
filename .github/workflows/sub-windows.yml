@@ -110,16 +110,16 @@ jobs:
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
-      - name: Chaching
-        id: cache-bin
-        if: ${{ inputs.caching }}
-        uses: actions/cache@v3
-        with:
-          path: bin/windows/bin
-          key: ${{ env.APP_NAME }}-windows-bin
+      # - name: Chaching
+      #   id: cache-bin
+      #   if: ${{ inputs.caching }}
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: bin/windows/bin
+      #     key: ${{ env.APP_NAME }}-windows-bin
 
       - name: Install haxelib dependencies
-        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        # if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: |          
           haxelib install hxcpp --quiet
           haxelib install lime --quiet          
@@ -133,7 +133,7 @@ jobs:
       # Build
 
       - name: Build
-        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        # if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
 
       - name: Show Build
@@ -141,17 +141,17 @@ jobs:
 
       # Create Windows Installer
 
-      - name: Install NSIS
-        uses: moonshine-ide/nsis-installer-action@master
-        with:
-          product_name: ${{ env.APP_NAME }}
-          product_version: ${{ inputs.version }}
-          product_publisher: "STARTcloud, Inc."
-          product_website: "https://moonshine-ide.com/"
-          product_exe: ${{ env.APP_NAME }}.exe
-          bin_path: bin\windows\bin\*.*
-          product_installer: ${{ env.APP_NAME }}-Setup.exe
-          product_license: LICENSE.md
+      # - name: Install NSIS
+      #   uses: moonshine-ide/nsis-installer-action@master
+      #   with:
+      #     product_name: ${{ env.APP_NAME }}
+      #     product_version: ${{ inputs.version }}
+      #     product_publisher: "STARTcloud, Inc."
+      #     product_website: "https://moonshine-ide.com/"
+      #     product_exe: ${{ env.APP_NAME }}.exe
+      #     bin_path: bin\windows\bin\*.*
+      #     product_installer: ${{ env.APP_NAME }}-Setup.exe
+      #     product_license: LICENSE.md
 
 
       # Upload artifacts
@@ -162,11 +162,11 @@ jobs:
           name: ${{ env.APP_NAME }}-bin
           path: bin/windows/bin
 
-      - name: Upload installer
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.APP_NAME }}-bin
-          path: ${{ env.APP_NAME }}-Setup.exe
+      # - name: Upload installer
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.APP_NAME }}-bin
+      #     path: ${{ env.APP_NAME }}-Setup.exe
           
 
 
