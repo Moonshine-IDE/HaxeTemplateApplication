@@ -167,13 +167,13 @@ jobs:
       - name: Show Installer
         run: |
           Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
-          echo ${{ steps.nsis-installer.outputs.product_installer }}
+          echo ${{ steps.nsis-installer.outputs.installer_path }}
 
       - name: Upload installer
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.APP_NAME }}-bin
-          path: ${{ steps.nsis-installer.outputs.product_installer }}
+          path: ${{ steps.nsis-installer.outputs.installer_path }}
 
       
           
