@@ -159,7 +159,7 @@ jobs:
           product_publisher: "STARTcloud, Inc."
           product_website: "https://moonshine-ide.com/"
           product_exe: ${{ env.APP_NAME }}.exe
-          bin_path: bin\windows\bin\*.*
+          bin_path: bin\windows\bin
           product_installer: ${{ env.APP_NAME }}-Setup.exe
           product_license: LICENSE.md
 
