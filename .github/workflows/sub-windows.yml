@@ -163,6 +163,9 @@ jobs:
           product_installer: ${{ env.APP_NAME }}-Setup.exe
           product_license: LICENSE.md
 
+      - name: Show Installer
+        run: Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
+
       - name: Upload installer
         uses: actions/upload-artifact@v3
         with:
