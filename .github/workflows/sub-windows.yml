@@ -151,7 +151,8 @@ jobs:
 
       # Create Windows Installer
 
-      - name: Install NSIS
+      - name: Create NSIS Installer
+        id: nsis-installer
         uses: moonshine-ide/nsis-installer-action@master
         with:
           product_name: ${{ env.APP_NAME }}
@@ -164,13 +165,15 @@ jobs:
           product_license: LICENSE.md
 
       - name: Show Installer
-        run: Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
+        run: |
+          Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
+          echo ${{ steps.nsis-installer.outputs.product_installer }}
 
       - name: Upload installer
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.APP_NAME }}-bin
-          path: ${{ env.APP_NAME }}-Setup.exe
+          path: ${{ steps.nsis-installer.outputs.product_installer }}
 
       
           
