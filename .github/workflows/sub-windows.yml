@@ -161,19 +161,19 @@ jobs:
           product_website: "https://moonshine-ide.com/"
           product_exe: ${{ env.APP_NAME }}.exe
           bin_path: bin\windows\bin
-          product_installer: ${{ env.APP_NAME }}-Setup.exe
-          product_license: LICENSE.md
+          license_path: LICENSE.md
+          output_path: ${{ env.APP_NAME }}-Setup.exe
 
-      - name: Show Installer
-        run: |
-          Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
-          Write-Debug -Message "${{ steps.nsis-installer.outputs.installer_path }}"
+      # - name: Show Installer
+      #   run: |
+      #     Get-ChildItem -Path . -Include ${{ env.APP_NAME }}-Setup.exe -Recurse | ForEach-Object{$_.FullName}
+      #     Write-Debug -Message "${{ steps.nsis-installer.outputs.installer_path }}"
           
-      - name: Upload installer
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.APP_NAME }}-bin
-          path: ${{ steps.nsis-installer.outputs.installer_path }}
+      # - name: Upload installer
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.APP_NAME }}-bin
+      #     path: ${{ steps.nsis-installer.outputs.installer_path }}
 
       
           
