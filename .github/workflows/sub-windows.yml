@@ -1,6 +1,6 @@
 name: SUB - Build Windows
 
-on:    
+on:
   workflow_dispatch:
     inputs:
       env:
@@ -37,49 +37,58 @@ on:
         default: false
 
 env:
-  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_id: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
   build:
     runs-on: windows-latest
-    
-    steps:
 
-      - name: Build info
+    steps:
+      # Set up environment
+
+      - name: Display Build info
         run: |
           echo "Ref: ${{ github.ref_name }}"
           echo "Env: ${{ inputs.env }}"
           echo "Version: ${{ inputs.version }}"
-          echo "App Name: ${{ env.APP_NAME }}"
-          echo "App ID: ${{ env.APP_ID }}"
-          echo "HAXE_FLAG: ${{ env.HAXE_FLAG }}"
+          echo "App Name: ${{ env.app_name }}"
+          echo "App ID: ${{ env.app_id }}"
+          echo "haxe_flag: ${{ env.haxe_flag }}"
 
-      - name: Checkout repo
+      - name: Set up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+  
+      - name: Display Haxe info
+        run: |
+          echo "Haxe version:"
+          haxe -version
+          echo "Haxe lib path:"
+          haxelib config
+
+      - name: Checkout repo with LFS support
         uses: actions/checkout@v3
         with:
           lfs: true
-      
-      - name: Checkout LFS objects
-        run: git lfs checkout
-      
-      
-      # Replacing values in files
 
-      - name: Override project.xml title
+      # Configure project
+
+      - name: Replace values in project.xml
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@title"
-          replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
+          replace: "${{ env.app_name }} ${{ inputs.version }}"
 
       - name: Override project.xml package
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@package"
-          replace: "${{ env.APP_ID }}"
+          replace: "${{ env.app_id }}"
 
       - name: Override project.xml version
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -93,87 +102,72 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/app/@file"
-          replace: "${{ env.APP_NAME }}"
+          replace: "${{ env.app_name }}"
 
-      - name: Set up Haxe
-        uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: 4.2.5
-
-      - name: Show haxe info
-        run: |
-          echo "Haxe version:"
-          haxe -version
-          echo "Haxe lib path:"
-          haxelib config
+      # Install dependencies
 
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
-      - name: Chaching
+      - name: Cache Binaries
         id: cache-bin
         if: ${{ inputs.caching }}
         uses: actions/cache@v3
         with:
           path: bin/windows/bin
-          key: ${{ env.APP_NAME }}-windows-bin
+          key: ${{ env.app_name }}-windows-bin
 
-      - name: Install haxelib dependencies
+      - name: Install haxelib dependencies if cache miss
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: |          
+        run: |
           haxelib install hxcpp --quiet
-          haxelib install lime --quiet          
+          haxelib install lime --quiet
           haxelib install openfl --quiet
           haxelib install actuate --quiet
           haxelib install feathersui --quiet
           haxelib install amfio --quiet
           haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
 
+      # Build project
 
-      # Build
-
-      - name: Build
+      - name: Build project if cache miss
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxelib run openfl build ./project.xml windows ${{ env.HAXE_FLAG }} -clean
+        run: haxelib run openfl build ./project.xml windows ${{ env.haxe_flag }} -clean
 
-      - name: Show Build
+      - name: List Build Files
         run: ls -r bin\windows\bin
-
-        
-      # Upload artifacts
 
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-win-bin
+          name: ${{ env.app_name }}-windows-bin
           path: bin/windows/bin
 
-
-      # Create Windows Installer
+      # Create installer
 
       - name: Create NSIS Installer
         uses: moonshine-ide/nsis-installer-action@master
         with:
-          product_name: ${{ env.APP_NAME }}
+          product_name: ${{ env.app_name }}
           product_version: ${{ inputs.version }}
           product_publisher: "STARTcloud, Inc."
           product_website: "https://moonshine-ide.com/"
-          product_exe: ${{ env.APP_NAME }}.exe
+          product_exe: ${{ env.app_name }}.exe
           bin_path: bin\windows\bin
           license_path: LICENSE.md
-          output_path: ${{ env.APP_NAME }}-Setup.exe
+          output_path: ${{ env.app_name }}-Setup.exe
 
       - name: Sign installer
         run: |
           New-Item -ItemType directory -Path certificate
           Set-Content -Path certificate\cert.txt -Value ${{ secrets.WIN_CERTKEY }}
           certutil -decode certificate\cert.txt certificate\cert.pfx
-          
+
           Import-PfxCertificate `
             -FilePath certificate\cert.pfx `
             -CertStoreLocation Cert:\CurrentUser\My `
             -Password (ConvertTo-SecureString -String ${{ secrets.WIN_CERTKEY_PASS }} -Force -AsPlainText)
-          
+
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x86/signtool.exe' sign `
             /debug `
             /fd SHA256 `
@@ -181,13 +175,12 @@ jobs:
             /f certificate\cert.pfx `
             /td sha256 `
             /tr 'http://timestamp.digicert.com' `
-            ${{ env.APP_NAME }}-Setup.exe
-          
+            ${{ env.app_name }}-Setup.exe
+
           Remove-Item -Recurse -Force certificate
-          
+
       - name: Upload installer
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-win-installer
-          path: ${{ env.APP_NAME }}-Setup.exe
-          
+          name: ${{ env.app_name }}-windows-installer
+          path: ${{ env.app_name }}-Setup.exe
