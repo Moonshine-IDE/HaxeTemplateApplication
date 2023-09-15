@@ -145,7 +145,7 @@ jobs:
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-bin
+          name: ${{ env.APP_NAME }}-win-bin
           path: bin/windows/bin
 
 
@@ -172,7 +172,7 @@ jobs:
       - name: Upload installer
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-windows-installer
+          name: ${{ env.APP_NAME }}-win-installer
           path: ${{ env.APP_NAME }}-Setup.exe
 
       
