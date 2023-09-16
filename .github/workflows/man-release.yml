@@ -67,14 +67,14 @@ jobs:
       - name: Download linux installer
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.app_name }}-Setup.AppImage
+          name: ${{ env.app_name }}-linux-installer
 
       - name: Download windows installer
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.app_name }}-Setup.exe
+          name: ${{ env.app_name }}-windows-installer
 
       - name: Download macos installer
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.app_name }}-Setup.pkg
+          name: ${{ env.app_name }}-macos-installer
