@@ -273,7 +273,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.app_name }}-Setup
-          path: ${{ env.app_name }}-Setup-Unsigned.pkg
+          path: ${{ env.app_name }}-Setup.pkg
           
 
 

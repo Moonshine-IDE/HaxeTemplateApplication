@@ -1,0 +1,80 @@
+name: MANUAL - Release
+
+on:    
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
+
+env:
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+
+jobs:
+  build-linux:
+    name: Build on Linux
+    uses: Moonshine-IDE/HaxeTemplateApplication/.github/workflows/sub-linux.yml@main
+    secrets: inherit
+    with:
+      env: ${{ inputs.env }}
+      version: ${{ inputs.version }}
+      caching: ${{ inputs.caching }}
+  
+  build-windows:
+    name: Build on Windows
+    uses: Moonshine-IDE/HaxeTemplateApplication/.github/workflows/sub-windows.yml@main
+    secrets: inherit
+    with:
+      env: ${{ inputs.env }}
+      version: ${{ inputs.version }}
+      caching: ${{ inputs.caching }}
+      
+  build-macos:
+    name: Build on MacOS
+    uses: Moonshine-IDE/HaxeTemplateApplication/.github/workflows/sub-macos.yml@main
+    secrets: inherit
+    with:
+      env: ${{ inputs.env }}
+      version: ${{ inputs.version }}
+      caching: ${{ inputs.caching }}
+
+  release:
+    name: Draft Release
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build info
+        run: |
+          echo "Ref: ${{ github.ref_name }}"
+          echo "Env: ${{ inputs.env }}"
+          echo "Version: ${{ inputs.version }}"
+          echo "App Name: ${{ env.app_name }}"
+        
+      - name: Download linux installer
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.app_name }}-Setup.AppImage
+
+      - name: Download windows installer
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.app_name }}-Setup.exe
+
+      - name: Download macos installer
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.app_name }}-Setup.pkg
