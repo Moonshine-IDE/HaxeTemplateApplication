@@ -14,6 +14,11 @@ on:
         description: 'A Version'
         required: true
         type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
@@ -25,6 +30,11 @@ on:
         description: 'A Version'
         required: true
         type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
 
 env:
   APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
@@ -37,7 +47,7 @@ jobs:
     
     steps:
 
-      - name: Build info
+      - name: Display Build info
         run: |
           echo "Ref: ${{ github.ref_name }}"
           echo "Env: ${{ inputs.env }}"
@@ -46,16 +56,24 @@ jobs:
           echo "App ID: ${{ env.APP_ID }}"
           echo "HAXE_FLAG: ${{ env.HAXE_FLAG }}"
 
+      - name: Set up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Display haxe info
+        run: |
+          echo "Haxe version:"
+          haxe -version
+          echo "Haxe lib path:"
+          haxelib config
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           lfs: true
       
-      - name: Checkout LFS objects
-        run: git lfs checkout
-      
-      
-      # Replacing values in files
+      # Configure project
 
       - name: Override project.xml title
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -85,22 +103,21 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.APP_NAME }}"
 
-      - name: Set up Haxe
-        uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: 4.2.5
-
-      - name: Show haxe info
-        run: |
-          echo "Haxe version:"
-          haxe -version
-          echo "Haxe lib path:"
-          haxelib config
+      # Install dependencies
 
       - name: Update haxelib
         run: haxelib --global update haxelib --quiet
 
-      - name: Install haxelib dependencies
+      - name: Cache Binaries
+        id: cache-bin
+        if: ${{ inputs.caching }}
+        uses: actions/cache@v3
+        with:
+          path: bin/macos/bin
+          key: ${{ env.app_name }}-macos-bin
+
+      - name: Install haxelib dependencies if cache miss
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: |          
           haxelib install hxcpp --quiet
           haxelib install lime --quiet          
@@ -110,10 +127,10 @@ jobs:
           haxelib install amfio --quiet
           haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
 
+      # Build project
 
-      # Build
-
-      - name: Build
+      - name: Build project if cache miss
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxelib run openfl build ./project.xml mac ${{ env.HAXE_FLAG }} -clean
 
       - name: Show bin folder
