@@ -14,6 +14,11 @@ on:
         description: 'A Version'
         required: true
         type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
@@ -25,11 +30,16 @@ on:
         description: 'A Version'
         required: true
         type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
 
 env:
-  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_id: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
   build:
@@ -42,9 +52,9 @@ jobs:
           echo "Ref: ${{ github.ref_name }}"
           echo "Env: ${{ inputs.env }}"
           echo "Version: ${{ inputs.version }}"
-          echo "App Name: ${{ env.APP_NAME }}"
-          echo "App ID: ${{ env.APP_ID }}"
-          echo "Haxe Env Flag: ${{ env.HAXE_FLAG }}"
+          echo "App Name: ${{ env.app_name }}"
+          echo "App ID: ${{ env.app_id }}"
+          echo "Haxe Env Flag: ${{ env.haxe_flag }}"
 
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -62,14 +72,14 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@title"
-          replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
+          replace: "${{ env.app_name }} ${{ inputs.version }}"
 
       - name: Override project.xml package
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@package"
-          replace: "${{ env.APP_ID }}"
+          replace: "${{ env.app_id }}"
 
       - name: Override project.xml version
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -83,7 +93,7 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/app/@file"
-          replace: "${{ env.APP_NAME }}"
+          replace: "${{ env.app_name }}"
 
 
       # Build preparation
@@ -108,7 +118,16 @@ jobs:
           echo "Haxe lib path:"
           haxelib config
 
-      - name: Install haxelib dependencies
+      - name: Cache Binaries
+        id: cache-bin
+        if: ${{ inputs.caching }}
+        uses: actions/cache@v3
+        with:
+          path: bin/linux/bin
+          key: ${{ env.app_name }}-linux-bin
+
+      - name: Install haxelib dependencies if cache miss
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: |          
           haxelib install hxcpp --quiet
           haxelib install lime --quiet          
@@ -121,8 +140,15 @@ jobs:
 
       # Build
 
-      - name: Build
-        run: haxelib run openfl build ./project.xml linux ${{ env.HAXE_FLAG }} -clean
+      - name: Build project if cache miss
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        run: haxelib run openfl build ./project.xml linux ${{ env.haxe_flag }} -clean
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.app_name }}-linux-bin
+          path: bin/linux/bin
 
 
       # Create AppImage
@@ -130,22 +156,22 @@ jobs:
       - name: Create AppImage
         uses: ./.github/actions/create-appimage
         with:
-          app-name: ${{ env.APP_NAME }}
+          app-name: ${{ env.app_name }}
           app-version: ${{ inputs.version }}
           app-icon-name: 'feathersui'
           app-categories: 'Utility'
-          bin-paths: 'bin/linux/bin/${{ env.APP_NAME }}'
+          bin-paths: 'bin/linux/bin/${{ env.app_name }}'
           lib-paths: 'bin/linux/bin/lime.ndll'
           appdir-paths: 'assets/feathersui.svg'
 
 
-      # Create AppImage
+      # Upload AppImage
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-Setup.AppImage
-          path: build/${{ env.APP_NAME }}-x86_64.AppImage
+          name: ${{ env.app_name }}-Setup.AppImage
+          path: build/${{ env.app_name }}-x86_64.AppImage
           
 
 
