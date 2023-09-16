@@ -37,9 +37,9 @@ on:
         default: false
 
 env:
-  APP_NAME: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  APP_ID: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  HAXE_FLAG: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_id: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
   build:
@@ -52,9 +52,9 @@ jobs:
           echo "Ref: ${{ github.ref_name }}"
           echo "Env: ${{ inputs.env }}"
           echo "Version: ${{ inputs.version }}"
-          echo "App Name: ${{ env.APP_NAME }}"
-          echo "App ID: ${{ env.APP_ID }}"
-          echo "HAXE_FLAG: ${{ env.HAXE_FLAG }}"
+          echo "App Name: ${{ env.app_name }}"
+          echo "App ID: ${{ env.app_id }}"
+          echo "haxe_flag: ${{ env.haxe_flag }}"
 
       - name: Set up Haxe
         uses: krdlab/setup-haxe@v1
@@ -80,14 +80,14 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@title"
-          replace: "${{ env.APP_NAME }} ${{ inputs.version }}"
+          replace: "${{ env.app_name }} ${{ inputs.version }}"
 
       - name: Override project.xml package
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@package"
-          replace: "${{ env.APP_ID }}"
+          replace: "${{ env.app_id }}"
 
       - name: Override project.xml version
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -101,7 +101,7 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/app/@file"
-          replace: "${{ env.APP_NAME }}"
+          replace: "${{ env.app_name }}"
 
       # Install dependencies
 
@@ -131,7 +131,7 @@ jobs:
 
       - name: Build project if cache miss
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxelib run openfl build ./project.xml mac ${{ env.HAXE_FLAG }} -clean
+        run: haxelib run openfl build ./project.xml mac ${{ env.haxe_flag }} -clean
 
       - name: Show bin folder
         run: ls -R bin/macos/bin
@@ -186,7 +186,7 @@ jobs:
           
       - name: Sign contents
         run: |
-          codesign bin/macos/bin/${{ env.APP_NAME }}.app \
+          codesign bin/macos/bin/${{ env.app_name }}.app \
             --sign "Developer ID Application" \
             --entitlements build/minimal.plist \
             --options runtime \
@@ -197,12 +197,12 @@ jobs:
           
       - name: Verify singature
         run: |
-          codesign bin/macos/bin/${{ env.APP_NAME }}.app \
+          codesign bin/macos/bin/${{ env.app_name }}.app \
             --display \
             --verbose \
             -r-
 
-          codesign bin/macos/bin/${{ env.APP_NAME }}.app \
+          codesign bin/macos/bin/${{ env.app_name }}.app \
             --verify \
             --verbose
 
@@ -212,26 +212,26 @@ jobs:
       - name: Create package
         run: |
           productbuild \
-            --version "${{ inputs.VERSION }}" \
+            --version "${{ inputs.version }}" \
             --product build/minimal.plist \
-            --identifier ${{ env.APP_ID }} \
-            --component bin/macos/bin/${{ env.APP_NAME }}.app \
+            --identifier ${{ env.app_id }} \
+            --component bin/macos/bin/${{ env.app_name }}.app \
             /Applications \
-            ${{ env.APP_NAME }}-Setup-Unsigned.pkg
+            ${{ env.app_name }}-Setup-Unsigned.pkg
 
       # Upload bin
 
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-bin
+          name: ${{ env.app_name }}-bin
           path: bin/macos/bin
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.APP_NAME }}-Setup
-          path: ${{ env.APP_NAME }}-Setup-Unsigned.pkg
+          name: ${{ env.app_name }}-Setup
+          path: ${{ env.app_name }}-Setup-Unsigned.pkg
           
 
 
