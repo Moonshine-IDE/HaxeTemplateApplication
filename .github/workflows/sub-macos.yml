@@ -237,7 +237,7 @@ jobs:
       - name: "Notarize app bundle"
         env:
           MAC_NOTARIZATION_APPLE_ID: ${{ secrets.MAC_NOTARIZATION_APPLE_ID }}
-          MAC_NOTARIZATION_TEAM_ID: ${{ env.MAC_NOTARIZATION_TEAM_ID }}
+          MAC_NOTARIZATION_TEAM_ID: ${{ vars.MAC_NOTARIZATION_TEAM_ID }}
           MAC_NOTARIZATION_PASS: ${{ secrets.MAC_NOTARIZATION_PASS }}
         run: |
           # Store the notarization credentials so that we can prevent a UI password dialog
