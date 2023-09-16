@@ -86,11 +86,11 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          name: GBAuth v${{ inputs.version }} ${{ inputs.env }}
-          tag_name: GBAuth-v${{ inputs.version }}${{ env.suffix }}
+          name: HaxeTemplateApplication v${{ inputs.version }} ${{ inputs.env }}
+          tag_name: v${{ inputs.version }}${{ env.suffix }}
           target_commitish: ${{ github.sha }}
           body: |
-            This is a ${{ inputs.env }} release of GBAuth.
+            This is a ${{ inputs.env }} release of HaxeTemplateApplication.
           draft: true
           prerelease: ${{ inputs.env == 'development' }}
           files: |
