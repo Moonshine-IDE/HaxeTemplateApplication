@@ -115,12 +115,7 @@ jobs:
 
       - name: Install haxelib dependencies and build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: >
-          haxe 
-            --main build.Build 
-            --run build/Build.hx 
-            --system mac 
-            --env ${{ inputs.env }}
+        run: haxe --main build.Build --run build/Build.hx --system mac --env ${{ inputs.env }}
 
       - name: Show bin folder
         run: ls -R bin/macos/bin
