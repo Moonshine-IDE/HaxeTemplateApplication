@@ -205,7 +205,14 @@ jobs:
           codesign bin/macos/bin/${{ env.app_name }}.app \
             --verify \
             --verbose
+  
+        # Upload bin
 
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.app_name }}-bin
+          path: bin/macos/bin
 
       # Create package
 
@@ -219,13 +226,48 @@ jobs:
             /Applications \
             ${{ env.app_name }}-Setup-Unsigned.pkg
 
-      # Upload bin
-
-      - name: Upload bin
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.app_name }}-bin
-          path: bin/macos/bin
+      - name: Sign installer
+        run: |
+          productsign \
+            --timestamp \
+            --sign "Developer ID Installer" \
+            ./${{ env.app_name }}-Setup-Unsigned.pkg \
+            ./${{ env.app_name }}-Setup.pkg
+              
+      - name: "Notarize app bundle"
+        env:
+          MAC_NOTARIZATION_APPLE_ID: ${{ secrets.MAC_NOTARIZATION_APPLE_ID }}
+          MAC_NOTARIZATION_TEAM_ID: ${{ secrets.MAC_NOTARIZATION_TEAM_ID }}
+          MAC_NOTARIZATION_PASS: ${{ secrets.MAC_NOTARIZATION_PASS }}
+        run: |
+          # Store the notarization credentials so that we can prevent a UI password dialog
+          # from blocking the CI
+          echo "Create keychain profile"
+          xcrun notarytool \
+            store-credentials "notarytool-profile" \
+            --apple-id "$MAC_NOTARIZATION_APPLE_ID" \
+            --team-id "$MAC_NOTARIZATION_TEAM_ID" \
+            --password "$MAC_NOTARIZATION_PASS"
+          
+          echo "Notarize app"
+          xcrun notarytool \
+            submit ./${{ env.app_name }}-Setup.pkg \
+            --keychain-profile "notarytool-profile" \
+            --wait
+          
+          echo "Attach staple"
+          xcrun stapler \
+            staple ./${{ env.app_name }}-Setup.pkg
+            
+      - name: Verify installer signature
+        run: |
+          pkgutil --check-signature ./${{ env.app_name }}-Setup.pkg
+          spctl \
+            --assess \
+            --type install \
+            --verbose \
+            --verbose \
+            ./${{ env.app_name }}-Setup.pkg      
 
       - name: Upload package
         uses: actions/upload-artifact@v3
