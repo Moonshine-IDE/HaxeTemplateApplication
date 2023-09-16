@@ -108,15 +108,14 @@ jobs:
         with:
           haxe-version: 4.2.5
 
-      - name: Update haxelib
-        run: haxelib --global update haxelib --quiet
-
       - name: Show haxe info
         run: |
           echo "Haxe version:"
           haxe -version
           echo "Haxe lib path:"
           haxelib config
+
+      # Install dependencies and build
 
       - name: Cache Binaries
         id: cache-bin
@@ -126,23 +125,14 @@ jobs:
           path: bin/linux/bin
           key: ${{ env.app_name }}-linux-bin
 
-      - name: Install haxelib dependencies if cache miss
+      - name: Install haxelib dependencies and build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: |          
-          haxelib install hxcpp --quiet
-          haxelib install lime --quiet          
-          haxelib install openfl --quiet
-          haxelib install actuate --quiet
-          haxelib install feathersui --quiet
-          haxelib install amfio --quiet
-          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
-
-
-      # Build
-
-      - name: Build project if cache miss
-        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxelib run openfl build ./project.xml linux ${{ env.haxe_flag }} -clean
+        run: >
+          haxe 
+            --main build.Build 
+            --run build/Build.hx 
+            --system linux 
+            --env ${{ inputs.env }}
 
       - name: Upload bin
         uses: actions/upload-artifact@v3

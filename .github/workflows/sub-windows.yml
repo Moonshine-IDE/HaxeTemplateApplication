@@ -104,10 +104,7 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.app_name }}"
 
-      # Install dependencies
-
-      - name: Update haxelib
-        run: haxelib --global update haxelib --quiet
+      # Install dependencies and build
 
       - name: Cache Binaries
         id: cache-bin
@@ -117,22 +114,14 @@ jobs:
           path: bin/windows/bin
           key: ${{ env.app_name }}-windows-bin
 
-      - name: Install haxelib dependencies if cache miss
+      - name: Install haxelib dependencies and build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: |
-          haxelib install hxcpp --quiet
-          haxelib install lime --quiet
-          haxelib install openfl --quiet
-          haxelib install actuate --quiet
-          haxelib install feathersui --quiet
-          haxelib install amfio --quiet
-          haxelib git champaign https://github.com/Moonshine-IDE/Champaign.git --quiet
-
-      # Build project
-
-      - name: Build project if cache miss
-        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxelib run openfl build ./project.xml windows ${{ env.haxe_flag }} -clean
+        run: >
+          haxe 
+            --main build.Build 
+            --run build/Build.hx 
+            --system linux 
+            --env ${{ inputs.env }}
 
       - name: List Build Files
         run: ls -r bin\windows\bin
