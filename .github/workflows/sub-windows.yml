@@ -116,7 +116,7 @@ jobs:
 
       - name: Install haxelib dependencies and build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxe --main build.Build --run build/Build.hx --system linux --env ${{ inputs.env }}
+        run: haxe --main build.Build --run build/Build.hx --system windows --env ${{ inputs.env }}
 
       - name: List Build Files
         run: ls -r bin\windows\bin
