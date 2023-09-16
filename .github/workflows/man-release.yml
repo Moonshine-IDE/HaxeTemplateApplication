@@ -22,6 +22,7 @@ on:
 
 env:
   app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  suffix: ${{ inputs.env == 'production' && '' || '-Dev' }}
 
 jobs:
   build-linux:
@@ -78,3 +79,24 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.app_name }}-macos-installer
+
+      - name: Debug artifacts
+        run: tree
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: GBAuth v${{ inputs.version }} ${{ inputs.env }}
+          tag_name: GBAuth-v${{ inputs.version }}${{ env.suffix }}
+          target_commitish: ${{ github.sha }}
+          body: |
+            This is a ${{ inputs.env }} release of GBAuth.
+          draft: true
+          prerelease: ${{ inputs.env == 'development' }}
+          files: |
+            ${{ env.app_name }}-Setup.AppImage
+            ${{ env.app_name }}-Setup.pkg
+            ${{ env.app_name }}-Setup.exe
+          fail_on_unmatched_files: true
+
+      
