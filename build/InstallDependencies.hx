@@ -1,5 +1,8 @@
 package build;
 
+// Usage:
+// $: haxe --run build/InstallDependencies.hx --main InstallDependencies
+
 class InstallDependencies {
     public static function main() {        
         Sys.command("haxelib --global update haxelib --quiet");
