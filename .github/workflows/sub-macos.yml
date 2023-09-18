@@ -39,6 +39,7 @@ on:
 env:
   app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   app_id: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  full_version: ${{ inputs.version }}-${{ github.run_number }}
   haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
@@ -51,7 +52,7 @@ jobs:
         run: |
           echo "Ref: ${{ github.ref_name }}"
           echo "Env: ${{ inputs.env }}"
-          echo "Version: ${{ inputs.version }}"
+          echo "Version: ${{ env.full_version }}"
           echo "App Name: ${{ env.app_name }}"
           echo "App ID: ${{ env.app_id }}"
           echo "haxe_flag: ${{ env.haxe_flag }}"
@@ -80,7 +81,7 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@title"
-          replace: "${{ env.app_name }} ${{ inputs.version }}"
+          replace: "${{ env.app_name }} ${{ inputs.version }} (Build: ${{ github.run_number }})"
 
       - name: Override project.xml package
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -94,7 +95,7 @@ jobs:
         with:
           filepath: "./project.xml"
           xpath: "/project/meta/@version"
-          replace: "${{ inputs.version }}"
+          replace: "${{ env.full_version }}"
 
       - name: Override project.xml file
         uses: Moonshine-IDE/xml-replace-action@v1.0
@@ -207,7 +208,7 @@ jobs:
       - name: Create package
         run: |
           productbuild \
-            --version "${{ inputs.version }}" \
+            --version "${{ env.full_version }}" \
             --product build/minimal.plist \
             --identifier ${{ env.app_id }} \
             --component bin/macos/bin/${{ env.app_name }}.app \
