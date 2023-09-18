@@ -125,9 +125,13 @@ jobs:
           path: bin/linux/bin
           key: ${{ env.app_name }}-linux-bin
 
-      - name: Install haxelib dependencies and build
+      - name: Install haxelib dependencies
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxe --main build.Build --run build/Build.hx --system linux --env ${{ inputs.env }}
+        run: haxe --run build/InstallDependencies.hx --main InstallDependencies
+
+      - name: Build
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        run: haxelib run openfl build ./project.xml linux ${{ env.haxe_flag }} -clean
 
       - name: Upload bin
         uses: actions/upload-artifact@v3

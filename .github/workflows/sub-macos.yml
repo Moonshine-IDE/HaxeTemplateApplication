@@ -113,9 +113,13 @@ jobs:
           path: bin/macos/bin
           key: ${{ env.app_name }}-macos-bin
 
-      - name: Install haxelib dependencies and build
+      - name: Install haxelib dependencies
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
-        run: haxe --main build.Build --run build/Build.hx --system mac --env ${{ inputs.env }}
+        run: haxe --run build/InstallDependencies.hx --main InstallDependencies
+  
+      - name: Build
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        run: haxelib run openfl build ./project.xml mac ${{ env.haxe_flag }} -clean
 
       - name: Show bin folder
         run: ls -R bin/macos/bin
