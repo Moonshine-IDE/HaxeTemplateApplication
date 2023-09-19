@@ -195,7 +195,7 @@ jobs:
         run: |
           codesign bin/macos/bin/${{ env.app_name }}.app \
             --sign "Developer ID Application" \
-            --entitlements build/minimal.plist \
+            --entitlements build/Entitlements.plist \
             --options runtime \
             --force \
             --timestamp \
@@ -227,7 +227,7 @@ jobs:
         run: |
           productbuild \
             --version "${{ env.full_version }}" \
-            --product build/minimal.plist \
+            --product build/Entitlements.plist \
             --identifier ${{ env.app_id }} \
             --component bin/macos/bin/${{ env.app_name }}.app \
             /Applications \
