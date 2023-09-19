@@ -38,7 +38,7 @@ on:
 
 env:
   app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  app_id: com.example.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_id: net.prominic.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
   full_version: ${{ inputs.version }}.${{ github.run_number }}
   haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
@@ -200,7 +200,7 @@ jobs:
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.app_name }}-bin
+          name: ${{ env.app_name }}-macos-bin
           path: bin/macos/bin
 
       # Create package
