@@ -107,7 +107,7 @@ jobs:
       - name: Replace vars in Info.plist
         uses: Aszusz/replace-action@master
         with:
-          files: GBAuthHaxeMaster/build/Info.plist
+          files: build/Info.plist
           replacements: '$APP_NAME=${{ env.app_name }},$APP_ID=${{ env.app_id }},$VERSION=${{ env.full_version }}'
 
       # Install dependencies and build
