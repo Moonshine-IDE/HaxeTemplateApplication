@@ -200,7 +200,7 @@ jobs:
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.app_name }}-bin
+          name: ${{ env.app_name }}-macos-bin
           path: bin/macos/bin
 
       # Create package
