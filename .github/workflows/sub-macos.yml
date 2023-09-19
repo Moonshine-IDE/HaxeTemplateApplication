@@ -104,6 +104,12 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.app_name }}"
 
+      - name: Replace vars in Info.plist
+        uses: Aszusz/replace-action@master
+        with:
+          files: GBAuthHaxeMaster/build/Info.plist
+          replacements: '$APP_NAME=${{ env.app_name }},$APP_ID=${{ env.app_id }},$VERSION=${{ env.full_version }}'
+
       # Install dependencies and build
 
       - name: Cache Binaries
@@ -121,6 +127,18 @@ jobs:
       - name: Build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxelib run openfl build ./project.xml mac ${{ env.haxe_flag }} -clean
+
+      - name: Replace entitlement
+        run: >
+          cp 
+          build/Entitlements.plist 
+          bin/macos/bin/${{ env.app_name }}.app/Contents/Entitlements.plist
+
+      - name: Replace Info.plist
+        run: >
+          cp 
+          build/Info.plist
+          bin/macos/bin/${{ env.app_name }}.app/Contents/Info.plist
 
       - name: Show bin folder
         run: ls -R bin/macos/bin
