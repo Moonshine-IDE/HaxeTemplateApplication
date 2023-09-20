@@ -17,6 +17,7 @@ class Build {
 	static var env: String = "";
 	static var version: String = "";
     static var buildNumber: String = "";
+    static var fullVersion: String = "";
 		
     static function main() {
         parseArgs();
@@ -45,11 +46,14 @@ class Build {
             }
         }
 
+        fullVersion = '${version}.${buildNumber}';
+
         trace("appName: " + appName);
         trace("appId: " + appId);
         trace("env: " + env);
         trace("version: " + version);
         trace("buildNumber: " + buildNumber);
+        trace("fullVersion: " + fullVersion);
 	}
 
     static function overrideProjectXml() {
@@ -59,7 +63,7 @@ class Build {
         var meta = project.elementsNamed('meta').next();
         meta.set('title', '${appName} ${version} (Build ${buildNumber})');
         meta.set('package', appId);
-        meta.set('version', version);
+        meta.set('version', fullVersion);
         var app = project.elementsNamed('app').next();
         app.set('file', appName);
         sys.io.File.saveContent('./project.xml', xml.toString());
@@ -84,6 +88,6 @@ class Build {
         } else {
             flags = "-final";
         }
-        Sys.command('haxelib run openfl build ./project.xml ${Sys.systemName()} ${flags}');
+        Sys.command('haxelib run openfl build ./project.xml ${Sys.systemName()} ${flags} -clean');
     }
 }
