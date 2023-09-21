@@ -177,7 +177,7 @@ jobs:
             /f certificate\cert.pfx `
             /td sha256 `
             /tr 'http://timestamp.digicert.com' `
-            ${{ env.app_name }}-Setup.exe
+            build/windows/${{ env.app_name }}-Setup.exe
 
           Remove-Item -Recurse -Force certificate
 
@@ -185,4 +185,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.app_name }}-windows-installer
-          path: ${{ env.app_name }}-Setup.exe
+          path: build/windows/${{ env.app_name }}-Setup.exe
