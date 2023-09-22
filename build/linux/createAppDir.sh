@@ -82,7 +82,7 @@ cat << EOF > build/linux/AppDir/AppRun
         
 HERE="\$(dirname "\$(readlink -f "\${0}")")"
 cd "\${HERE}/usr/bin"
-exec "${APP_NAME}"
+exec "./${APP_NAME}"
 EOF
 chmod a+x build/linux/AppDir/AppRun
 
