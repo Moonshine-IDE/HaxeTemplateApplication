@@ -143,16 +143,22 @@ jobs:
 
       # Create AppImage
 
+      - name: Create AppDir
+        run: |
+          build/linux/createAppDir.sh \
+          --app-name "${{ env.app_name }}" \
+          --app-version "${{ env.full_version }}" \
+          --app-icon-name "feathersui" \
+          --app-categories "Utility;" \
+          --bin-paths "bin/linux/bin/*" \
+          --appdir-paths "assets/feathersui.svg"
+
       - name: Create AppImage
-        uses: ./.github/actions/create-appimage
-        with:
-          app-name: ${{ env.app_name }}
-          app-version: ${{ env.full_version }}
-          app-icon-name: 'feathersui'
-          app-categories: 'Utility'
-          bin-paths: 'bin/linux/bin/${{ env.app_name }}'
-          lib-paths: 'bin/linux/bin/lime.ndll'
-          appdir-paths: 'assets/feathersui.svg'
+        run: |
+          cd build/linux
+          wget --quiet "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod a+x appimagetool-x86_64.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
 
 
       # Upload AppImage
@@ -161,7 +167,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.app_name }}-linux-installer
-          path: build/${{ env.app_name }}-x86_64.AppImage
+          path: build/linux/${{ env.app_name }}-x86_64.AppImage
           
 
 
