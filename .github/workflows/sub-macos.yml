@@ -104,11 +104,26 @@ jobs:
           xpath: "/project/app/@file"
           replace: "${{ env.app_name }}"
 
-      - name: Replace vars in Info.plist
-        uses: Aszusz/replace-action@master
+      - name: Replace APP_NAME in Info.plist
+        uses: Moonshine-IDE/text-replace-action@main
         with:
+          pattern: $APP_NAME
+          replacement: ${{ env.app_name }}
           files: build/Info.plist
-          replacements: '$APP_NAME=${{ env.app_name }},$APP_ID=${{ env.app_id }},$VERSION=${{ env.full_version }}'
+
+      - name: Replace APP_ID in Info.plist
+        uses: Moonshine-IDE/text-replace-action@main
+        with:
+          pattern: $APP_ID
+          replacement: ${{ env.app_id }}
+          files: build/Info.plist
+
+      - name: Replace VERSION in Info.plist
+        uses: Moonshine-IDE/text-replace-action@main
+        with:
+          pattern: $VERSION
+          replacement: ${{ env.full_version }}
+          files: build/Info.plist
 
       # Install dependencies and build
 
