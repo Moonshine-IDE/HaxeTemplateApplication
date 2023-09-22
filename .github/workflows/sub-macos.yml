@@ -109,21 +109,21 @@ jobs:
         with:
           pattern: $APP_NAME
           replacement: ${{ env.app_name }}
-          files: build/Info.plist
+          files: build/macos/Info.plist
 
       - name: Replace APP_ID in Info.plist
         uses: Moonshine-IDE/text-replace-action@main
         with:
           pattern: $APP_ID
           replacement: ${{ env.app_id }}
-          files: build/Info.plist
+          files: build/macos/Info.plist
 
       - name: Replace VERSION in Info.plist
         uses: Moonshine-IDE/text-replace-action@main
         with:
           pattern: $VERSION
           replacement: ${{ env.full_version }}
-          files: build/Info.plist
+          files: build/macos/Info.plist
 
       # Install dependencies and build
 
@@ -146,13 +146,13 @@ jobs:
       - name: Replace entitlement
         run: >
           cp 
-          build/Entitlements.plist 
+          build/macos/Entitlements.plist 
           bin/macos/bin/${{ env.app_name }}.app/Contents/Entitlements.plist
 
       - name: Replace Info.plist
         run: >
           cp 
-          build/Info.plist
+          build/macos/Info.plist
           bin/macos/bin/${{ env.app_name }}.app/Contents/Info.plist
 
       - name: Show bin folder
@@ -210,7 +210,7 @@ jobs:
         run: |
           codesign bin/macos/bin/${{ env.app_name }}.app \
             --sign "Developer ID Application" \
-            --entitlements build/Entitlements.plist \
+            --entitlements build/macos/Entitlements.plist \
             --options runtime \
             --force \
             --timestamp \
@@ -242,7 +242,7 @@ jobs:
         run: |
           productbuild \
             --version "${{ env.full_version }}" \
-            --product build/Entitlements.plist \
+            --product build/macos/Entitlements.plist \
             --identifier ${{ env.app_id }} \
             --component bin/macos/bin/${{ env.app_name }}.app \
             /Applications \
