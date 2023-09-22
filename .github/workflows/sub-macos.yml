@@ -227,8 +227,6 @@ jobs:
           codesign bin/macos/bin/${{ env.app_name }}.app \
             --verify \
             --verbose
-  
-        # Upload bin
 
       - name: Upload bin
         uses: actions/upload-artifact@v3

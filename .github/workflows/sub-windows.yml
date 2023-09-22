@@ -84,7 +84,7 @@ jobs:
 
       # Configure project
 
-      - name: Replace values in project.xml
+      - name: Override project.xml title
         uses: Moonshine-IDE/xml-replace-action@v1.0
         with:
           filepath: "./project.xml"
