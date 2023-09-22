@@ -150,7 +150,7 @@ jobs:
           --app-version "${{ env.full_version }}" \
           --app-icon-name "feathersui" \
           --app-categories "Utility;" \
-          --bin-paths "bin/linux/bin/" \
+          --bin-paths "bin/linux" \
           --appdir-paths "assets/feathersui.svg"
 
       - name: Create AppImage
