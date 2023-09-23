@@ -70,13 +70,6 @@ jobs:
           echo "Haxe lib path:"
           haxelib config
 
-      - name: Install NSIS plugin nsProcess
-        run: |
-          Invoke-RestMethod -Uri "https://nsis.sourceforge.io/mediawiki/images/1/18/NsProcess.zip" -OutFile NsProcess.7z
-          7z x NsProcess.7z -o'NsProcess'
-          mv NsProcess\Plugin\nsProcessW.dll "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsProcess.dll"
-          mv NSProcess\Include\nsProcess.nsh "C:\Program Files (x86)\NSIS\Include\nsProcess.nsh"
-
       - name: Checkout repo with LFS support
         uses: actions/checkout@v3
         with:
@@ -142,22 +135,16 @@ jobs:
       # Create installer
 
       - name: Create NSIS Installer
-        run: |
-          $binDir = Resolve-Path -Path "bin\windows\bin" | Select-Object -ExpandProperty Path
-          $binPath = Join-Path -Path $binDir -ChildPath "*.*"
-          $licenseFile = Resolve-Path -Path "license.MD" | Select-Object -ExpandProperty Path
-
-          makensis `
-            /DPRODUCT_NAME="${{ env.app_name }}" `
-            /DPRODUCT_VERSION="${{ env.full_version }}" `
-            /DPRODUCT_PUBLISHER="STARTcloud, Inc." `
-            /DPRODUCT_WEB_SITE="https://github.com/Moonshine-IDE/HaxeTemplateApplication" `
-            /DBIN_PATH=$binPath `
-            /DPRODUCT_EXE="${{ env.app_name }}.exe" `
-            /DPRODUCT_INSTALLER="${{ env.app_name }}-Setup.exe" `
-            /DLICENSE_FILE=$licenseFile `
-            /DROOT_KEY=HKCU `
-            ./build/windows/createInstaller.nsi
+        uses: Moonshine-IDE/nsis-installer-action@master
+        with:
+          product_name: ${{ env.app_name }}
+          product_version: ${{ env.full_version }}
+          product_publisher: "STARTcloud, Inc."
+          product_website: "https://github.com/Moonshine-IDE/HaxeTemplateApplication"
+          product_exe: "${{ env.app_name }}.exe"
+          bin_path: bin/windows/bin
+          license_path: LICENSE.md
+          output_path: build/windows/${{ env.app_name }}-Setup.exe
 
       - name: Sign installer
         run: |
