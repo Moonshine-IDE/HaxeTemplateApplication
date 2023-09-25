@@ -142,23 +142,18 @@ jobs:
 
 
       # Create AppImage
-
-      - name: Create AppDir
-        run: |
-          build/linux/createAppDir.sh \
-          --app-name "${{ env.app_name }}" \
-          --app-version "${{ env.full_version }}" \
-          --app-icon-name "feathersui" \
-          --app-categories "Utility;" \
-          --bin-paths "bin/linux/bin" \
-          --appdir-paths "assets/feathersui.svg"
-
       - name: Create AppImage
-        run: |
-          cd build/linux
-          wget --quiet "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
-          chmod a+x appimagetool-x86_64.AppImage
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+        uses: Moonshine-IDE/create-appimage-action@main
+        with:
+          app-name: ${{ env.app_name }}
+          app-version: ${{ env.full_version }}
+          app-icon-name: feathersui
+          app-categories: Utility
+          bin-paths: bin/linux/bin
+          appdir-paths: assets/feathersui.svg
+          lib-paths:
+          share-paths:
+          output-path: build/linux/${{ env.app_name }}-x86_64.AppImage
 
 
       # Upload AppImage
