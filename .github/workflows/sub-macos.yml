@@ -132,7 +132,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: bin/macos/bin
-          key: ${{ env.app_name }}-macos-bin
+          key: '${{ env.app_name }}-macos-bin'
 
       - name: Install haxelib dependencies
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
@@ -145,14 +145,14 @@ jobs:
       - name: Replace entitlement
         run: >
           cp 
-          build/macos/Entitlements.plist 
-          bin/macos/bin/${{ env.app_name }}.app/Contents/Entitlements.plist
+          'build/macos/Entitlements.plist'
+          'bin/macos/bin/${{ env.app_name }}.app/Contents/Entitlements.plist'
 
       - name: Replace Info.plist
         run: >
           cp 
-          build/macos/Info.plist
-          bin/macos/bin/${{ env.app_name }}.app/Contents/Info.plist
+          'build/macos/Info.plist'
+          'bin/macos/bin/${{ env.app_name }}.app/Contents/Info.plist'
 
       - name: Show bin folder
         run: ls -R bin/macos/bin
@@ -207,7 +207,7 @@ jobs:
 
       - name: Sign contents
         run: |
-          codesign bin/macos/bin/${{ env.app_name }}.app \
+          codesign 'bin/macos/bin/${{ env.app_name }}.app' \
             --sign "Developer ID Application" \
             --entitlements build/macos/Entitlements.plist \
             --options runtime \
@@ -218,19 +218,19 @@ jobs:
 
       - name: Verify singature
         run: |
-          codesign bin/macos/bin/${{ env.app_name }}.app \
+          codesign 'bin/macos/bin/${{ env.app_name }}.app' \
             --display \
             --verbose \
             -r-
 
-          codesign bin/macos/bin/${{ env.app_name }}.app \
+          codesign 'bin/macos/bin/${{ env.app_name }}.app' \
             --verify \
             --verbose
 
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.app_name }}-macos-bin
+          name: '${{ env.app_name }}-macos-bin'
           path: bin/macos/bin
 
       # Create package
@@ -242,17 +242,17 @@ jobs:
             --product build/macos/Entitlements.plist \
             --identifier ${{ env.app_id }} \
             --scripts build/macos/script.sh \
-            --component bin/macos/bin/${{ env.app_name }}.app \
+            --component 'bin/macos/bin/${{ env.app_name }}.app' \
             /Applications \
-            ${{ env.app_name }}-Setup-Unsigned.pkg
+            '${{ env.app_name }}-Setup-Unsigned.pkg'
 
       - name: Sign installer
         run: |
           productsign \
             --timestamp \
             --sign "Developer ID Installer" \
-            ./${{ env.app_name }}-Setup-Unsigned.pkg \
-            ./${{ env.app_name }}-Setup.pkg
+            './${{ env.app_name }}-Setup-Unsigned.pkg' \
+            './${{ env.app_name }}-Setup.pkg'
 
       - name: "Notarize app bundle"
         env:
@@ -271,26 +271,26 @@ jobs:
 
           echo "Notarize app"
           xcrun notarytool \
-            submit ./${{ env.app_name }}-Setup.pkg \
+            submit './${{ env.app_name }}-Setup.pkg' \
             --keychain-profile "notarytool-profile" \
             --wait
 
           echo "Attach staple"
           xcrun stapler \
-            staple ./${{ env.app_name }}-Setup.pkg
+            staple './${{ env.app_name }}-Setup.pkg'
 
       - name: Verify installer signature
         run: |
-          pkgutil --check-signature ./${{ env.app_name }}-Setup.pkg
+          pkgutil --check-signature './${{ env.app_name }}-Setup.pkg'
           spctl \
             --assess \
             --type install \
             --verbose \
             --verbose \
-            ./${{ env.app_name }}-Setup.pkg
+            './${{ env.app_name }}-Setup.pkg'
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.app_name }}-macos-installer
-          path: ${{ env.app_name }}-Setup.pkg
+          name: '${{ env.app_name }}-macos-installer'
+          path: '${{ env.app_name }}-Setup.pkg'
