@@ -1,21 +1,21 @@
 name: SUB - Build macOS
 
-on:    
+on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'An Environment'
+        description: "An Environment"
         required: true
         type: choice
         options:
           - development
           - production
       version:
-        description: 'A Version'
+        description: "A Version"
         required: true
         type: string
       caching:
-        description: 'Use caching'
+        description: "Use caching"
         required: true
         type: boolean
         default: false
@@ -23,31 +23,30 @@ on:
   workflow_call:
     inputs:
       env:
-        description: 'An Environment'
+        description: "An Environment"
         required: true
         type: string
       version:
-        description: 'A Version'
+        description: "A Version"
         required: true
         type: string
       caching:
-        description: 'Use caching'
+        description: "Use caching"
         required: true
         type: boolean
         default: false
 
 env:
-  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
-  app_id: net.prominic.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication 2' || 'HaxeTemplateApplication 2 Development' }}
+  app_id: net.prominic.${{ inputs.env == 'production' && 'HaxeTemplateApplication 2' || 'HaxeTemplateApplication 2 Development' }}
   full_version: ${{ inputs.version }}.${{ github.run_number }}
   haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
 
 jobs:
   build:
     runs-on: macos-latest
-    
-    steps:
 
+    steps:
       - name: Display Build info
         run: |
           echo "Ref: ${{ github.ref_name }}"
@@ -73,7 +72,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           lfs: true
-      
+
       # Configure project
 
       - name: Override project.xml title
@@ -138,7 +137,7 @@ jobs:
       - name: Install haxelib dependencies
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxe --run build/InstallDependencies.hx --main InstallDependencies
-  
+
       - name: Build
         if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
         run: haxelib run openfl build ./project.xml mac ${{ env.haxe_flag }} -clean
@@ -195,7 +194,7 @@ jobs:
             -P "$MAC_CERTKEY_PASS" \
             -T /usr/bin/codesign \
             -T /usr/bin/productsign
-  
+
       - name: Allow codesign and productsign to use keychain
         env:
           MAC_KEYCHAIN_PASS: ${{ secrets.MAC_KEYCHAIN_PASS }}
@@ -205,7 +204,7 @@ jobs:
             -s \
             -k "$MAC_KEYCHAIN_PASS" \
             build.keychain
-          
+
       - name: Sign contents
         run: |
           codesign bin/macos/bin/${{ env.app_name }}.app \
@@ -216,7 +215,7 @@ jobs:
             --timestamp \
             --verbose \
             --deep
-          
+
       - name: Verify singature
         run: |
           codesign bin/macos/bin/${{ env.app_name }}.app \
@@ -242,6 +241,7 @@ jobs:
             --version "${{ env.full_version }}" \
             --product build/macos/Entitlements.plist \
             --identifier ${{ env.app_id }} \
+            --scripts build/macos/script.sh \
             --component bin/macos/bin/${{ env.app_name }}.app \
             /Applications \
             ${{ env.app_name }}-Setup-Unsigned.pkg
@@ -253,7 +253,7 @@ jobs:
             --sign "Developer ID Installer" \
             ./${{ env.app_name }}-Setup-Unsigned.pkg \
             ./${{ env.app_name }}-Setup.pkg
-              
+
       - name: "Notarize app bundle"
         env:
           MAC_NOTARIZATION_APPLE_ID: ${{ secrets.MAC_NOTARIZATION_APPLE_ID }}
@@ -268,17 +268,17 @@ jobs:
             --apple-id "$MAC_NOTARIZATION_APPLE_ID" \
             --team-id "$MAC_NOTARIZATION_TEAM_ID" \
             --password "$MAC_NOTARIZATION_PASS"
-          
+
           echo "Notarize app"
           xcrun notarytool \
             submit ./${{ env.app_name }}-Setup.pkg \
             --keychain-profile "notarytool-profile" \
             --wait
-          
+
           echo "Attach staple"
           xcrun stapler \
             staple ./${{ env.app_name }}-Setup.pkg
-            
+
       - name: Verify installer signature
         run: |
           pkgutil --check-signature ./${{ env.app_name }}-Setup.pkg
@@ -287,14 +287,10 @@ jobs:
             --type install \
             --verbose \
             --verbose \
-            ./${{ env.app_name }}-Setup.pkg      
+            ./${{ env.app_name }}-Setup.pkg
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.app_name }}-macos-installer
           path: ${{ env.app_name }}-Setup.pkg
-          
-
-
-     
