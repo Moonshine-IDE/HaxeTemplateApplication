@@ -241,7 +241,7 @@ jobs:
             --version "${{ env.full_version }}" \
             --product build/macos/Entitlements.plist \
             --identifier ${{ env.app_id }} \
-            --scripts build/macos/script.sh \
+            --scripts build/macos/scripts/ \
             --component 'bin/macos/bin/${{ env.app_name }}.app' \
             /Applications \
             '${{ env.app_name }}-Setup-Unsigned.pkg'
