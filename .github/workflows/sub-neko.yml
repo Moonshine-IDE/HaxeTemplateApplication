@@ -1,0 +1,143 @@
+name: SUB - Build Neko
+
+on:    
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
+
+  workflow_call:
+    inputs:
+      env:
+        description: 'An Environment'
+        required: true
+        type: string
+      version:
+        description: 'A Version'
+        required: true
+        type: string
+      caching:
+        description: 'Use caching'
+        required: true
+        type: boolean
+        default: false
+
+env:
+  app_name: ${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  app_id: net.prominic.${{ inputs.env == 'production' && 'HaxeTemplateApplication' || 'HaxeTemplateApplicationDevelopment' }}
+  full_version: ${{ inputs.version }}.${{ github.run_number }}
+  haxe_flag: ${{ inputs.env == 'production' && '-final' || '-debug' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - name: Build info
+        run: |
+          echo "Ref: ${{ github.ref_name }}"
+          echo "Env: ${{ inputs.env }}"
+          echo "Version: ${{ env.full_version }}"
+          echo "App Name: ${{ env.app_name }}"
+          echo "App ID: ${{ env.app_id }}"
+          echo "Haxe Env Flag: ${{ env.haxe_flag }}"
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      
+      - name: Checkout LFS objects
+        run: git lfs checkout
+      
+      
+      # Replacing values in files
+
+      - name: Override project.xml title
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@title"
+          replace: "${{ env.app_name }} ${{ inputs.version }} (Build: ${{ github.run_number }})"
+
+      - name: Override project.xml package
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@package"
+          replace: "${{ env.app_id }}"
+
+      - name: Override project.xml version
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/meta/@version"
+          replace: "${{ env.full_version }}"
+
+      - name: Override project.xml file
+        uses: Moonshine-IDE/xml-replace-action@v1.0
+        with:
+          filepath: "./project.xml"
+          xpath: "/project/app/@file"
+          replace: "${{ env.app_name }}"
+
+
+      # Build preparation
+
+      - name: Set up Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Show haxe info
+        run: |
+          echo "Haxe version:"
+          haxe -version
+          echo "Haxe lib path:"
+          haxelib config
+
+      # Install dependencies and build
+
+      - name: Cache Binaries
+        id: cache-bin
+        if: ${{ inputs.caching }}
+        uses: actions/cache@v3
+        with:
+          path: bin/linux/bin
+          key: ${{ env.app_name }}-linux-bin
+
+      - name: Install haxelib dependencies
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        run: haxe --run build/InstallDependencies.hx --main InstallDependencies
+
+      - name: Build
+        if: ${{ !inputs.caching || !steps.cache-bin.outputs.cache-hit }}
+        run: haxelib run openfl build ./project.xml neko ${{ env.haxe_flag }} -clean
+
+      - name: Pritn
+        run: tree bin/
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.app_name }}-neko-bin
+          path: bin/neko/bin
+          
+
+
+     
