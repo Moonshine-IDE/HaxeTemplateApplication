@@ -71,7 +71,7 @@ jobs:
           haxelib config
 
       - name: Checkout repo with LFS support
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -110,7 +110,7 @@ jobs:
       - name: Cache Binaries
         id: cache-bin
         if: ${{ inputs.caching }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: bin/windows/bin
           key: ${{ env.app_name }}-windows-bin
@@ -127,7 +127,7 @@ jobs:
         run: ls -r bin\windows\bin
 
       - name: Upload bin
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.app_name }}-windows-bin
           path: bin/windows/bin
@@ -169,7 +169,7 @@ jobs:
           Remove-Item -Recurse -Force certificate
 
       - name: Upload installer
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.app_name }}-windows-installer
           path: build/windows/${{ env.app_name }}-Setup.exe
